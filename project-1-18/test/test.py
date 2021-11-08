@@ -11,6 +11,9 @@ def run_test_suite(input_file1, input_file2):
     level = os.environ.get('$LOG_LEVEL')
     LOG_FILE = os.environ.get('$LOG_FILE')
     GITHUB_TOKEN = os.environ.get('$GITHUB_TOKEN')
+    
+
+    level = '0'
 
     if level == '0':
         LOG_LEVEL = logging.NOTSET
@@ -30,6 +33,9 @@ def run_test_suite(input_file1, input_file2):
     except GithubException:
         logging.error("Invalid token used")
         sys.exit()
+        
+        
+    print (g)
 
     repos, others = ranking_module.parse_input(input_file1, g)
     before = datetime.datetime.now()  # Timing runtime of program

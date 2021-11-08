@@ -1,11 +1,11 @@
 import ranking_module
-import test
-import sys
 
+import sys
+from Test import test
 
 def main():
-    test1 = 'test1.txt'
-    test2 = 'test2.txt'
+    test1 = 'Test/test1.txt'
+    test2 = 'Test/test2.txt'
     print(str(sys.argv))
     if len(sys.argv) < 2:
         print("error, not enough arguments")
