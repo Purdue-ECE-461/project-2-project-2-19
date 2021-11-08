@@ -1,4 +1,4 @@
-import ranking_modules
+import ranking_module
 import test
 import sys
 
@@ -16,7 +16,7 @@ def main():
         print("test running")
         test.run_test_suite(test1, test2)
     else:
-        ranking_modules.run_files(sys.argv[1])
+        ranking_module.run_files(sys.argv[1])
 
     return 0
 

@@ -1,4 +1,4 @@
-import ranking_modules
+import ranking_module
 from coverage import Coverage
 from github import Github, GithubException
 import sys
@@ -31,14 +31,14 @@ def run_test_suite(input_file1, input_file2):
         logging.error("Invalid token used")
         sys.exit()
 
-    repos, others = ranking_modules.parse_input(input_file1, g)
+    repos, others = ranking_module.parse_input(input_file1, g)
     before = datetime.datetime.now()  # Timing runtime of program
 
-    repos = ranking_modules.get_repos(g, repos)
+    repos = ranking_module.get_repos(g, repos)
     test_num = 0
-    scores = [ranking_modules.get_ramp_up_scores(repos), ranking_modules.get_responsiveness_scores(repos),
-              ranking_modules.get_license_scores(repos), ranking_modules.get_bus_factor_scores(repos),
-              ranking_modules.get_correctness_scores(repos)]
+    scores = [ranking_module.get_ramp_up_scores(repos), ranking_module.get_responsiveness_scores(repos),
+              ranking_module.get_license_scores(repos), ranking_module.get_bus_factor_scores(repos),
+              ranking_module.get_correctness_scores(repos)]
 
     score_1 = [item[0] for item in scores]
     if score_1 == [-1, -1. - 1. - 1. - 1, -1]:  # google should not output anything but -1
@@ -53,16 +53,16 @@ def run_test_suite(input_file1, input_file2):
     if score_4 != [-1, -1. - 1. - 1. - 1, -1]:
         test_num += 1
 
-    ranking_modules.output_result(scores, repos, others)
+    ranking_module.output_result(scores, repos, others)
 
     logging.info('Runtime:', (datetime.datetime.now() - before).seconds, 'seconds')
 
-    repos, others = ranking_modules.parse_input(input_file2, g)  # checking if the algo works with just 1 url in the
+    repos, others = ranking_module.parse_input(input_file2, g)  # checking if the algo works with just 1 url in the
     # file
 
     datetime.datetime.now()
 
-    repos = ranking_modules.get_repos(g, repos)
+    repos = ranking_module.get_repos(g, repos)
 
     if len(repos) == 1:
         logging.error("Input needs at least two links")
