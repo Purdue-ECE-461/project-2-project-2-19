@@ -1,9 +1,0 @@
-https://www.google.com/?client=safari
-https://github.com
-https://github.com/vivek42537/project39596
-https://github.com/vivek42537/project39595
-https://github.com/jackfrued/Python-100-Days
-https://github.com/pytorch/data
-https://github.com/pytorch/data/tree/main/torchdata
-https://github.com/strapi/strapi
-https://github.com/Kshaunish-Soni/Digital-Food-Lab
