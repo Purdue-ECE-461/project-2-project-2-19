@@ -1,11 +1,30 @@
 <html>
-    <head>
-        <title>Sample app</title>
-    </head>
-    <body>
-        <h1>{{ title }}</h1>
-        <p><a href="/docs">Docs</a></p>
-        <p><a href="/about">About</a></p>
-        <p><a href="/">Home</a></p>
-    </body>
+
+    <header>
+        <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    </header>
+
+    <title>NPM-Registry Group 19</title>
+
+        <div class="parent">
+            <div class="container-below">
+                <div class="wrapper-below">       
+
+                    <ul class="list-wrapper">
+                    
+                        <li class="list-items">
+                            <p><a href="/docs">Upload</a></p>
+                        </li>
+                    
+                        <li class="list-items">
+                            <p><a href="/docs">Update</a></p>
+                        </li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+
 </html>
