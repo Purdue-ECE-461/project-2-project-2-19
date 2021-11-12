@@ -43,25 +43,89 @@ code {
     
 }
 
+.text-content{  /* the stuff on the left titel, desc, link */
+    height: 100%;
+    width: 90%;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    
+    padding-left: 42px;
+    padding-top: 25px;
+}
 
 .list-items{ /* the li items */
     border-bottom: 0.093rem solid rgba(0,0,0,0.2);
     
     display: flex;
-    height: 40%;
+    height: 45%;
     
     justify-content: center;
     align-items: center;
     
 }
-a {
+.a-link {
     text-decoration: none;
-    font-size: 3rem;
-    color: #db7093;
+    font-size: 2.3rem;
+    color: rgba(0,0,0,0.7);
 
 }
 
-a:hover{
+
+.a-link:hover{
     color: -webkit-link;
 }
 
+
+.navbar-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.navbar-wrapper{
+
+    font-family: "Denso Var", sans-serif;
+    display: flex;
+    align-items: center;
+    
+    height: 15%;
+    width: 69%;
+    
+    padding-top: 2.5rem;
+    padding-bottom: 1.3rem;
+    justify-content: center;
+    color: rgba(0,0,0,0.6)!important;
+    
+    border-bottom: 0.093rem solid rgba(0,0,0,0.2);
+}
+
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.nav-link {
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+    cursor: pointer;
+}
+
+.nav-link:hover{
+    color: -webkit-link;
+
+}
+
+.nav-item{
+    padding-right: 25px;
+    font-size: 24px;
+    border-right: 0.093rem   solid rgba(0,0,0,0.2);
+}
