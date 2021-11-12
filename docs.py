@@ -18,7 +18,6 @@ Progress:
         file:///C:/Users/garvi/Downloads/P2M1n%20(3).pdf
 
 Todos:
-    -1. Ensure static files are served properly despite the Cache 10 minute expiry.
     0. Read the OpenAPI spec/tabs.
     1. Finish off basic uploading, begin metric calculation and DB construction of the latter.
     2. Upload the latter ingest, paginate, reset.
