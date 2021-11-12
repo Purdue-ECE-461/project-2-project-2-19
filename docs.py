@@ -18,10 +18,13 @@ Progress:
         file:///C:/Users/garvi/Downloads/P2M1n%20(3).pdf
 
 Todos:
+    -1. Ensure static files are served properly despite the Cache 10 minute expiry.
+    0. Read the OpenAPI spec/tabs.
+    1. Finish off basic uploading, begin metric calculation and DB construction of the latter.
+    2. Upload the latter ingest, paginate, reset.
+
     1. Set up CI/CD.
-    2. SQL + Cloud deployment to support package upload WITHOUT metric calculations.
-    3. Revise the front end to support animations, a navigation bar, and fade ins.
-    4. Do the metric calculations on a BASE-64 encoded zip file. 
+    2. Do the metric calculations on a BASE-64 encoded zip file. 
 
     5. Any other BASE-line requirement.
 '''
