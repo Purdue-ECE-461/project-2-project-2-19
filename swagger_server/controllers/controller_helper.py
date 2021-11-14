@@ -46,4 +46,8 @@ def convert_and_upload_zip(byteStream):
 
     # The public URL can be used to directly access the uploaded file via HTTP.
     print(blob.public_url)
+    
+    
+    # No use for the zip anymore.
+    os.remove(temp_location)
  

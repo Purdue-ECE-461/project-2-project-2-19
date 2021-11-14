@@ -90,7 +90,7 @@ def package_create(body):  # noqa: E501
     #if connexion.request.is_json:
 #    x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
-    print (body)
+ #   print (body)
     f = controller_helper.convert_and_upload_zip(body.data.content)
 
     return 'hey sexy ;]'
