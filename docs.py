@@ -18,7 +18,6 @@ Progress:
         file:///C:/Users/garvi/Downloads/P2M1n%20(3).pdf
 
 Todos:
-    
     Storage Phase:
         1. Change the "tmp_file" destination to cloud with the NAME and ID identifiers.
             It's overwriting right now.
@@ -26,7 +25,7 @@ Todos:
         2. Metric calculations, DB storage, uploading the latter.
         
     
-    Fetcing Phase:
+    Fetching Phase:
         1. Everything else really. EZ-PZ if storage is good.
     
 
@@ -36,5 +35,10 @@ Todos:
         2. Convert package_create to /tmp/ for GCloud.
             https://stackoverflow.com/questions/61762429/how-to-upload-an-image-to-google-cloud-storage-from-app-engine
 
-        3. (XAUTH) @153 talks more about, XAUTH... When I get to it lol.
+        3. (XAUTH) Piazza @153 talks more about, XAUTH... When I get to it lol.
+        
+        4. About page.
+            Credit anyone who needs it/clear cache/instructions (how-to).
+            
+        5. Deploy and see if changes mitigate properly.
 '''
