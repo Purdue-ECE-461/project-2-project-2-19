@@ -30,6 +30,7 @@ def docs():
     return render_template("index.html", title="docs page")
 
 
+
 @app.route("/upload", methods=['POST', 'GET'])
 def upload():
     '''
