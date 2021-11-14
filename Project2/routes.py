@@ -12,13 +12,13 @@ from Project2 import macros
 
 #Library imports
 import os
-from flask import render_template, request
+from flask import render_template, flash, request
 from google.cloud import storage
-
 
 @app.route("/")
 @app.route("/home")
 def homepage():
+    flash('Welcome back!')
     return render_template("index.html", title="NPM-Registry Group 19")
 
 @app.route("/docs")
@@ -60,6 +60,8 @@ def upload():
     
         # The public URL can be used to directly access the uploaded file via HTTP.
         print(blob.public_url)
+        
+        flash("File added to the Cloud")
         
     return render_template("index.html", title="docs page")
 

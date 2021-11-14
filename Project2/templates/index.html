@@ -9,7 +9,16 @@
     <title>NPM-Registry Group 19</title>
 
         <div class="parent">
-        
+
+    <div class="flash-messages" id="flashed">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <h1>{{ message }}</h1>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
             <div class="navbar-container">
                 <div class="navbar-wrapper">
                     <ul class="nav">
@@ -47,6 +56,7 @@
                         </form>
                         
                                 <p> Upload a Package in Base64 String. [Will support B64 later]. </p>
+                                <p> </p>
                             </div>
                         </li>
                     
@@ -63,6 +73,10 @@
                 </div>
             </div>
         </div>
+        
+        
+<script type="text/javascript">window.setTimeout("document.getElementById('flashed').style.display='none';", 4500); </script>
+
         
 
 </html>

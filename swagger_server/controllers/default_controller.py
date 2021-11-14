@@ -15,6 +15,11 @@ from swagger_server.models.package_rating import PackageRating  # noqa: E501
 from swagger_server import util
 
 
+
+# Packages
+from swagger_server.controllers import controller_helper
+
+
 def create_auth_token(body):  # noqa: E501
     """create_auth_token
 
@@ -68,7 +73,7 @@ def package_by_name_get(name, x_authorization=None):  # noqa: E501
     return 'do some magic!'
 
 
-def package_create(body, x_authorization):  # noqa: E501
+def package_create(body):  # noqa: E501
     """package_create
 
      # noqa: E501
@@ -82,9 +87,13 @@ def package_create(body, x_authorization):  # noqa: E501
     """
     if connexion.request.is_json:
         body = Package.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    #if connexion.request.is_json:
+#    x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+
+    print (body)
+    f = controller_helper.convert_and_upload_zip(body.data.content)
+
+    return 'hey sexy ;]'
 
 
 def package_delete(id, x_authorization=None):  # noqa: E501

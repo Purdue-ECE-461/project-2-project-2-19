@@ -18,12 +18,10 @@ Progress:
         file:///C:/Users/garvi/Downloads/P2M1n%20(3).pdf
 
 Todos:
-    0. Read the OpenAPI spec/tabs.
-    1. Finish off basic uploading, begin metric calculation and DB construction of the latter.
-    2. Upload the latter ingest, paginate, reset.
 
     1. Set up CI/CD.
-    2. Do the metric calculations on a BASE-64 encoded zip file. 
 
-    5. Any other BASE-line requirement.
+
+    2. Convert package_create to /tmp/ for GCloud.
+        https://stackoverflow.com/questions/61762429/how-to-upload-an-image-to-google-cloud-storage-from-app-engine
 '''

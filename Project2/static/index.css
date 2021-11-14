@@ -95,7 +95,7 @@ code {
     width: 69%;
     
     padding-top: 2.5rem;
-    padding-bottom: 1.3rem;
+    padding-bottom: 1.7rem;
     justify-content: center;
     color: rgba(0,0,0,0.6)!important;
     
@@ -111,6 +111,7 @@ code {
     justify-content: center;
     align-items: center;
     gap: 25px;
+    
 }
 
 .nav-link {
@@ -128,4 +129,14 @@ code {
     padding-right: 25px;
     font-size: 24px;
     border-right: 0.093rem   solid rgba(0,0,0,0.2);
+}
+
+
+.flash-messages{
+    display: flex;
+    justify-content: center;
+    color: lightslategray;
+    position: absolute;
+    margin-bottom: -100px;
+    width: 40%;
 }
