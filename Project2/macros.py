@@ -19,3 +19,5 @@ GAC = "C:\\Users\\garvi\\Downloads\\purdue-project-2-c3aa3b050970.json"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GAC
 
 CLOUD_STORAGE_BUCKET = os.getenv('CLOUD_STORAGE_BUCKET')
+
+first_load = True

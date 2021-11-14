@@ -9,12 +9,41 @@ Created on Sun Nov 14 00:59:53 2021
 import zipfile
 import base64
 import os
+import glob
+import json
+
 from google.cloud import storage
 
 
 # Package imports
 from Project2 import util
 from Project2 import macros
+
+
+def child_dirs(path):
+     cd = os.getcwd()        
+     os.chdir(path)          
+     dirs = glob.glob("*/")  
+     os.chdir(cd)            
+     return dirs
+
+def get_package_json(temp_location_of_zip):
+    with zipfile.ZipFile(temp_location_of_zip, 'r') as f:
+        f.extractall('unzipped')    
+    
+    repo_name = child_dirs('unzipped')[0]
+    
+    print(repo_name)
+    
+    f = open('unzipped/' + repo_name + '/package.json', 'r')
+    
+    data = json.load(f)['repository']
+    print(data)
+    f.close()
+    
+    import shutil
+    shutil.rmtree('unzipped')
+
 
 #https://stackoverflow.com/questions/54747460/how-to-decode-an-encoded-zipfile-using-python
 def convert_and_upload_zip(byteStream):
@@ -47,7 +76,10 @@ def convert_and_upload_zip(byteStream):
     # The public URL can be used to directly access the uploaded file via HTTP.
     print(blob.public_url)
     
+    # Get the JSON file inside this dir.
+    repo_url_for_github = get_package_json(temp_location)
     
+    print(repo_url_for_github)
     # No use for the zip anymore.
     os.remove(temp_location)
  

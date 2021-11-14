@@ -18,7 +18,9 @@ from google.cloud import storage
 @app.route("/")
 @app.route("/home")
 def homepage():
-    flash('Welcome back!')
+    if (macros.first_load == True):
+        flash('Welcome back!')
+        macros.first_load = False
     return render_template("index.html", title="NPM-Registry Group 19")
 
 @app.route("/docs")
