@@ -5,6 +5,9 @@ Created on Thu Nov 11 01:22:59 2021
 @author: garvi, navani
 """
 
+from flask import render_template, flash, request
+from google.cloud import storage
+
 # File imports
 from project_2 import app
 from project_2 import util
@@ -12,8 +15,7 @@ from project_2 import macros
 
 # Library imports
 # import os
-from flask import render_template, flash, request
-from google.cloud import storage
+
 
 
 @app.route("/")
