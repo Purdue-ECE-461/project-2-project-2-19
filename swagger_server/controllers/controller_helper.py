@@ -16,8 +16,8 @@ from google.cloud import storage
 
 
 # Package imports
-from Project2 import util
-from Project2 import macros
+from project_2 import util
+from project_2 import macros
 
 
 def child_dirs(path):

@@ -21,13 +21,13 @@ Todos:
     Storage Phase:
         1. Change the "tmp_file" destination to cloud with the NAME and ID identifiers.
             It's overwriting right now.
-            
+
         2. Metric calculations, DB storage, uploading the latter.
-        
-    
+
+
     Fetching Phase:
         1. Everything else really. EZ-PZ if storage is good.
-    
+
 
     Other Crap:
         1. Set up CI/CD.
@@ -36,9 +36,9 @@ Todos:
             https://stackoverflow.com/questions/61762429/how-to-upload-an-image-to-google-cloud-storage-from-app-engine
 
         3. (XAUTH) Piazza @153 talks more about, XAUTH... When I get to it lol.
-        
+
         4. About page.
             Credit anyone who needs it/clear cache/instructions (how-to).
-            
+
         5. Deploy and see if changes mitigate properly.
 '''

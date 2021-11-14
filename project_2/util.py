@@ -5,7 +5,7 @@ Created on Sat Nov 13 22:55:09 2021
 @author: garvi
 """
 
-#Library imports
+# Library imports
 from google.cloud import storage
 
 
@@ -13,7 +13,7 @@ def implicit():
     '''
     Borrowed from google-docs,
     Ensure the implicit auth works.
-    
+
     Returns, none.
     '''
     # If you don't specify credentials when constructing the client, the
