@@ -5,3 +5,5 @@ handlers:
 - url: /static
   static_dir: static
 
+env_variables:
+    CLOUD_STORAGE_BUCKET: bucket_zip_uploads
