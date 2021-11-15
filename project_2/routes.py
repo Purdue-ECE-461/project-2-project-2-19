@@ -9,13 +9,18 @@ from flask import render_template, flash, request
 from google.cloud import storage
 
 # File imports
-from project_2 import app
+#from project_2 import app
+import connexion
 from project_2 import util
 from project_2 import macros
 
 # Library imports
 # import os
 
+#from project_2 import routes
+
+# app = Flask(__name__)
+app = connexion.App(__name__, specification_dir='./')
 
 
 @app.route("/")

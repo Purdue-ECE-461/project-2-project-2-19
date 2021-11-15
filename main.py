@@ -7,7 +7,7 @@ Created on Thu Nov 11 01:24:05 2021
 
 import os
 from dotenv import load_dotenv
-from project_2 import app
+from project_2.routes import app
 
 load_dotenv()
 
