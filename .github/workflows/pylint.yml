@@ -21,5 +21,6 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint . --ignore=p2env,static,swagger_server, --disable=C0114,C0115,C0116
+        pylint main.py --disable=C0114,C0115,C0116
+        pylint ./project_2 --ignore=static,templates --disable=C0114,C0115,C0116
          
