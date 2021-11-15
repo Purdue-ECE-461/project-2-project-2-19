@@ -23,3 +23,5 @@ jobs:
       run: |
           pylint main.py --disable=C0114,C0115,C0116
           pylint ./project_2 --ignore=static,templates --disable=C0114,C0115,C0116
+     
+
