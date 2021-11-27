@@ -93,7 +93,7 @@ def package_create(body, x_authorization=None):  # noqa: E501
 #    print(x_authorization)
     f = controller_helper.convert_and_upload_zip(body.data.content)
 
-    return 'hey sexy ;]'
+    return 'Success'
 
 
 def package_delete(id, x_authorization=None):  # noqa: E501
