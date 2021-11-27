@@ -18,6 +18,7 @@ from swagger_server import util
 
 # Packages
 from swagger_server.controllers import controller_helper
+#from swagger_server.controllers import ranking_module
 
 
 def create_auth_token(body):  # noqa: E501
@@ -90,8 +91,25 @@ def package_create(body, x_authorization=None):  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
+    print(body.metadata.name)
 #    print(x_authorization)
-    f = controller_helper.convert_and_upload_zip(body.data.content)
+    github_repo_url = controller_helper.convert_and_upload_zip(body.data.content, 
+                                                               body.metadata.name,
+                                                               body.metadata.version,
+                                                               body.metadata.id)
+    
+    if (github_repo_url == -1):
+        return 'Failure'
+    
+    pretend_score_array = [0.9, 0.4, 0.6, 5.5, 1.4, 5.6]
+    
+    for scores in pretend_score_array:
+        if (scores >= 0.5):
+            pass
+        else:
+            # delete the zip file uploaded, it isn't ingestible.
+            pass
+            
 
     return 'Success'
 
