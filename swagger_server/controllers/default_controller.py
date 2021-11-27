@@ -98,6 +98,7 @@ def package_create(body, x_authorization=None):  # noqa: E501
                                                                body.metadata.version,
                                                                body.metadata.id)
     
+    print (github_repo_url)
     if (github_repo_url == -1):
         return 'Failure'
     
