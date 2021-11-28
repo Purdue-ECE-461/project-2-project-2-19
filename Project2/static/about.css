@@ -147,6 +147,11 @@ code {
     text-decoration: none;
 }
 
+.a_link2:hover{
+    font-size: 20px;
+    transition: all 0.35s ease-in;
+}
+
 .content{
     display: flex;
     justify-content: flex-start;

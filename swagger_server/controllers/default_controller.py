@@ -52,6 +52,9 @@ def package_by_name_delete(name, x_authorization=None):  # noqa: E501
         name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    print (name)
+    
     return 'do some magic!'
 
 

@@ -59,5 +59,5 @@ Questions.
     1. When passing metrics, what package to compare to? Existing? How to find metrics?
          AS of now I'm using random repos to normalize data.
     2. The backend is not deploying.
-    s
+    3. IS my new metric correct?
 '''

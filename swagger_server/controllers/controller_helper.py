@@ -316,4 +316,16 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     os.remove(temp_location)
 
     return repo_url_for_github
+
+
+def delete_package_by_name(name):
+    '''
+    Deletes all version of the package given by the name name
+    
+    
+    1. Delete from the SQL
+    2. Delete from the bucket.
+    '''
+    
+    pass
  
