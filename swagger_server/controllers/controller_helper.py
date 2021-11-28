@@ -261,6 +261,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     
     # find the project that was recently created again.
+            # since version and name both have to be the same find that.
     new_created_project = Projects.query.filter(Projects.name == name 
                                                 and Projects.version == version).first()
     
@@ -318,14 +319,44 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     return repo_url_for_github
 
 
+def find_metrics_by_project(proj):
+    mid = proj.project_metrics[0].mid
+    return Metrics.query.filter(Metrics.mid == mid).first()
+
 def delete_package_by_name(name):
     '''
     Deletes all version of the package given by the name name
     
     
-    1. Delete from the SQL
+    1. Delete from the SQL the project and affiliate metrics.
     2. Delete from the bucket.
     '''
+    desired_projects = Projects.query.filter(Projects.name == name).all()
     
+    
+    if desired_projects == []:
+        return 400
+    
+    for projects in desired_projects:
+        # Delete the associoated metrics.
+        db.session.delete(find_metrics_by_project(projects))
+        db.session.delete(projects)
+        db.session.commit()
+        
+    gcs = storage.Client()
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    blobs = bucket.list_blobs()
+    print (blobs)
+    for blob in blobs:
+        # name will always have the unique project name
+        this_name = blob.name.partition(':')[0]
+        
+        if (this_name == name):
+            blob.delete()
+            
+        print(blob.name.partition(':'))
+    #The format for saving is Name:ID
+    # Delete all blobs that contain this name before the :
+    return 200
     pass
  

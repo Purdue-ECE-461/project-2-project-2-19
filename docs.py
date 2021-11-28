@@ -6,6 +6,11 @@ Created on Thu Nov 11 02:29:57 2021
 """
 
 '''
+                            These are just my notes. 
+                            Dont look here.
+                            Go away.
+
+
 File/Structure Guide:
      /
          Top level main
@@ -55,9 +60,21 @@ Todos:
         5. Deploy and see if changes mitigate properly.
         
 
+Start:
+    1. Make a new database cos idk
+    2. Update front-end to call API
+    3. paginate
+
 Questions.
     1. When passing metrics, what package to compare to? Existing? How to find metrics?
          AS of now I'm using random repos to normalize data.
     2. The backend is not deploying.
     3. IS my new metric correct?
+    
+    4. Test cases for deleting wtih more than 1 package version.
+    5. Divide by zero errors.
+    
+    6. Uploading packages with same name and same version, same name diff version, diff name
+    .. same version.
+    
 '''
