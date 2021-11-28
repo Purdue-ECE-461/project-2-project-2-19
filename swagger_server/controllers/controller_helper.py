@@ -31,8 +31,39 @@ def child_dirs(path):
      dirs = glob.glob("*/")  
      os.chdir(cd)            
      return dirs
+ 
+
+def get_pin_value(data):
+    '''
+        Code Ninja Data lol
+        
+        Anyway,
+        params:
+                data - holds a dict containing the crap u got from package json
+        returns:
+                float, new metric.
+    '''
+    
+    dict_deps = data['dependencies']
+
+# either in an exact, bounded range, or tilde/carat range forma
+    
+    num_exact = 0
+    for (key) in dict_deps:
+        if ('-' in dict_deps[key] or '^' in dict_deps[key]):
+            continue
+        else:
+            num_exact += 1
+
+    return (1 / num_exact)
 
 def get_package_json(temp_location_of_zip):
+    '''
+    Params:
+        tmp_location_zip 
+    Returns:
+        tuple with Github link and the new metric.
+    '''
     with zipfile.ZipFile(temp_location_of_zip, 'r') as f:
         f.extractall('unzipped')    
     
@@ -42,19 +73,28 @@ def get_package_json(temp_location_of_zip):
     
     f = open('unzipped/' + repo_name + '/package.json', 'r')
     
-    data = json.load(f)['repository']
-    print(data)
-    f.close()
+    data = json.load(f)
     
+    new_metric_value = get_pin_value(data)
+    
+    f.close()    
     import shutil
     shutil.rmtree('unzipped')
+    
+    try:
+        if (data['repository']):
+            return (data['repository'], new_metric_value)
+    except:
+        return (None, new_metric_value)
+
+    return (data['repository'], new_metric_value)    
 
 
 # User ORM for SQLAlchemy
 class Projects(db.Model):
     print(db)
     id = db.Column(db.Integer, primary_key = True, nullable = False, unique = True)
-    name = db.Column(db.String(50), nullable = False)
+    name = db.Column(db.String(50), nullable = False, unique = False)
     version = db.Column(db.String(50), nullable = False, unique = False)
     
     # 1 row of metrics, forward link
@@ -67,7 +107,7 @@ class Projects(db.Model):
 
 class Metrics(db.Model):
     mid = db.Column(db.Integer, 
-                    primary_key=True)
+                    primary_key=True, nullable = False, unique = True)
     
     BusFactor = db.Column(db.Float, 
                          index=True)
@@ -83,19 +123,33 @@ class Metrics(db.Model):
 
 
     # There is no reason to set this.
-    project_owner = db.relationship("Projects", back_populates="project_metrics")    
+    project_owner = db.relationship("Projects", back_populates="project_metrics")
+    
+    
+    def ingestible(self):
+        return (self.BusFactor >= 0.5 and 
+                self.Correctness >= 0.5 and
+                self.GoodPinningPractice >= 0.5 and
+                self.LicenseScore >= 0.5 and
+                self.RampUp >= 0.5 and
+                self.ResponsiveMaintainer >= 0.5)
 
 
     
     def __repr__(self):
-        return '<METRICS \nBus: {}\nID: {}>'.format(self.BusFactor, self.mid)
+        return '\n<METRICS \nBus: {} \
+            \nCorrec: {}\nPins {}\nID: {}>'.format(self.BusFactor, 
+                                                self.Correctness, 
+                                                self.GoodPinningPractice,
+                                                self.mid)
 
 
 
 def add_project_db(name, version):
     project = Projects.query.filter_by(name = name).first()
     
-    db.create_all()
+#    db.session.merge()
+#    db.create_all()
         
     print ("\n====================\n")
     for prj in Projects.query.all():
@@ -110,7 +164,7 @@ def add_project_db(name, version):
     # This project is new.
     if not project:
         try:
-            print ("HEY adding new")
+            print ("adding new project")
             new_project = Projects(
                         name = name,
                         version = version
@@ -118,29 +172,43 @@ def add_project_db(name, version):
             db.session.add(new_project)
             db.session.commit()
             
-            print ("here")
+            print ("Done adding project, returning 200")
             return 200
         except Exception as e:
             print (e)
             return 404
     else:
-        print ("Failed if")
+        print ("Failed if because project exists already")
         return 403
 
-    print ("NOT HERE")
+    print ("This should NOT be printed")
     # it should not get here
     return -1
 
 
 def tear_down():
+    print ("Deleting the SQL Database...")
     db.session.query(Metrics).delete()
     db.session.query(Projects).delete()
     db.session.commit()
+    print ("Done")
 
-def get_metrics(repo_url):
+
+    print ("Deleting the Bucket on Google-Storage...")
+    gcs = storage.Client()
+    # Get the bucket that we're burning 
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        blob.delete()
+    print ("Done")
+
+    
+
+def get_metrics(repo_url, new_metric_value):
     return Metrics(BusFactor = 1.0,
                    Correctness = 1.0,
-                   GoodPinningPractice = 1.0,
+                   GoodPinningPractice = new_metric_value,
                    LicenseScore = 1.0,
                    RampUp = 1.0,
                    ResponsiveMaintainer = 1.0)
@@ -155,6 +223,9 @@ def convert_and_upload_zip(byteStream, name, version, uid):
             If new, assign a UID in the SQL database.
             If not, delete the query.
   >  2. Find the metrics, upload to another SQL db with the UID.
+  
+      2.1. Verify the package is ingesitble.
+  
     3. Make a new zip file name based on ID & Delete all breadtrails upload to the bucket 
         and make it available for download in bucket.
     '''
@@ -179,8 +250,9 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     # Get the JSON file inside this dir.
     repo_url_for_github = None
+    new_metric_val = -1
     try:
-        repo_url_for_github = get_package_json(temp_location)
+        repo_url_for_github, new_metric_val = get_package_json(temp_location)
     except:
         print ("No Repo Link")
     
@@ -193,8 +265,21 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     print ("Will link this: {}".format(new_created_project.name))
     
     # --------------------- QUESTION 2 IN DOCS TODO --------------- #
-    metrics_class = get_metrics(repo_url_for_github)
+    metrics_class = get_metrics(repo_url_for_github, new_metric_val)
     
+    
+    print (new_metric_val)
+    print (metrics_class)
+    
+    if (metrics_class.ingestible() == False):
+        db.session.delete(new_created_project)
+        db.session.commit()
+        return -1
+    
+    print ("\n Ingestion Success.. \n")
+    
+    # Add the metric class to SQL instance, 
+    # .. link with the new project, upload to the bucket.
     db.session.add(metrics_class)
     db.session.commit()
     
