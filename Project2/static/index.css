@@ -3,6 +3,9 @@ html, #root, .App, .parent {
 
 }
 
+body{
+	font-family: "Denso Var", sans-serif;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

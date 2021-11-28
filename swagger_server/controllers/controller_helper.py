@@ -55,6 +55,9 @@ def get_pin_value(data):
         else:
             num_exact += 1
 
+    print ("Found {} pinned dependancies".format(num_exact))
+    if (num_exact == 0):
+        num_exact = 1
     return (1 / num_exact)
 
 def get_package_json(temp_location_of_zip):
@@ -274,6 +277,8 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     if (metrics_class.ingestible() == False):
         db.session.delete(new_created_project)
         db.session.commit()
+        
+        print ("Ingestion failed.")
         return -1
     
     print ("\n Ingestion Success.. \n")
