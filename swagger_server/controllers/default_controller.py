@@ -175,7 +175,10 @@ def package_retrieve(id, x_authorization=None):  # noqa: E501
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    
+    ret = controller_helper.get_package_by_id(id)
+    return ret
 
 
 def package_update(body, id, x_authorization=None):  # noqa: E501

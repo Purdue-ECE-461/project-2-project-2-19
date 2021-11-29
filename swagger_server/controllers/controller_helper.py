@@ -321,6 +321,36 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     return repo_url_for_github
 
 
+
+def get_package_by_id(id):
+    '''
+        Get a package by id
+        Return the metadata for now
+        
+        params
+            id, of the project
+    '''
+    # ID is unique so yeah
+    desired_project = Projects.query.filter(Projects.id == id).first()
+
+    if desired_project is None:
+        return 400
+
+    '''
+      "metadata": {
+            "ID": "ID",
+            "Name": "Name",
+            "Version": "1.2.3"
+          }
+    '''    
+    meta_data = {}
+    meta_data['ID'] = id
+    meta_data['Name'] = desired_project.name
+    meta_data['Version'] = desired_project.version
+
+
+    return meta_data
+
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
     return Metrics.query.filter(Metrics.mid == mid).first()
