@@ -148,21 +148,22 @@ class Metrics(db.Model):
 
 
 
+def display_sql():
+    print ("\n====================\n")
+    for prj in Projects.query.all():
+        print (prj)
+    print ("\n====================\n\n")
+    for metr in Metrics.query.all():
+        print (metr)        
+    print ("\n====================\n\n")
+    
 def add_project_db(name, version):
     project = Projects.query.filter_by(name = name).first()
     
 #    db.session.merge()
 #    db.create_all()
         
-    print ("\n====================\n")
-    for prj in Projects.query.all():
-        print (prj)
-    print ("\n====================\n\n")
-
-    for metr in Metrics.query.all():
-        print (metr)
-        
-    print ("\n====================\n\n")
+    display_sql()
 
     # This project is new.
     if not project:
@@ -311,11 +312,12 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     blob.make_public()
 
     # The public URL can be used to directly access the uploaded file via HTTP.
-    print(blob.public_url)
+    print("Link to download: {}".format(blob.public_url))
     
     # No use for the zip anymore.
     os.remove(temp_location)
 
+    display_sql()
     return repo_url_for_github
 
 
@@ -357,6 +359,43 @@ def delete_package_by_name(name):
         print(blob.name.partition(':'))
     #The format for saving is Name:ID
     # Delete all blobs that contain this name before the :
+        
+    display_sql()
     return 200
-    pass
- 
+
+
+def delete_package_by_id(id):
+    '''
+    Deletes only THIS version of the package.    
+    
+    1. Delete from the SQL the project and affiliate metrics.
+    2. Delete from the bucket.
+    '''
+
+    # ID is unique so yeah
+    desired_project = Projects.query.filter(Projects.id == id).first()
+
+    if desired_project is None:
+        return 400
+
+    # Remvoe the metric first
+    db.session.delete(find_metrics_by_project(desired_project))
+    db.session.delete(desired_project)
+    db.session.commit()
+    
+    gcs = storage.Client()
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    blobs = bucket.list_blobs()
+    print (blobs)
+    for blob in blobs:
+        # this id is always unique because of the SQL database entry
+                # lmao what a garbage regex wannabe 
+                # But since the way this is stored is always unique this is safe
+        this_id = blob.name.partition(':')[2].partition('.')[0]
+        print (this_id)
+        
+        if (this_id == id):
+            blob.delete()
+
+    display_sql()    
+    return 200

@@ -60,10 +60,12 @@ Todos:
         5. Deploy and see if changes mitigate properly.
         
 
-Start:
+Todo:
     1. Make a new database cos idk
     2. Update front-end to call API
-    3. paginate
+    3. all the other endpoints
+    
+    4. Error checking, end to end tests good response codes and so forth.
 
 Questions.
     1. When passing metrics, what package to compare to? Existing? How to find metrics?
