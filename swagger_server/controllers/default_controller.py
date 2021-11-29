@@ -146,6 +146,9 @@ def package_rate(id, x_authorization=None):  # noqa: E501
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+
+    controller_helper.testing()
+
     return 'do some magic!'
 
 
@@ -220,6 +223,7 @@ def packages_list(body, x_authorization=None, offset=None):  # noqa: E501
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
+        
     return 'do some magic!'
 
 

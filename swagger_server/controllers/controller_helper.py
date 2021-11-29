@@ -108,6 +108,11 @@ class Projects(db.Model):
         return f'\n========\nID: {self.id}\nName: {self.name}\nVersion: {self.version}\nMetrics: {self.project_metrics}\n=======\n'
 
 
+def testing():
+    print ("Yes")
+    db.create_all()
+    db.session.commit()
+
 class Metrics(db.Model):
     mid = db.Column(db.Integer, 
                     primary_key=True, nullable = False, unique = True)
@@ -162,13 +167,13 @@ def display_sql():
     print ("\n====================\n\n")
     
 def add_project_db(name, version):
-    project = Projects.query.filter_by(name = name).first()
+    print (name, version)
+    project = Projects.query.filter(Projects.version == version).filter(Projects.name == name).first()
     
 #    db.session.merge()
 #    db.create_all()
         
     display_sql()
-
     # This project is new.
     if not project:
         try:
@@ -269,9 +274,8 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     # find the project that was recently created again.
             # since version and name both have to be the same find that.
-    new_created_project = Projects.query.filter(Projects.name == name 
-                                                and Projects.version == version).first()
-    
+    new_created_project = Projects.query.filter(Projects.version == version).filter(Projects.name == name).first()
+
     
     print ("Will link this: {}".format(new_created_project.name))
     

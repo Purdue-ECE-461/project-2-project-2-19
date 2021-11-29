@@ -10,7 +10,7 @@ flask_app = app.app
 
 PASSWORD=os.getenv("DB_PASS")
 PUBLIC_IP_ADDRESS =os.getenv("DB_IP")
-DBNAME ="projects"
+DBNAME ="projects_v2"
 PROJECT_ID ="purdue-project-2"
 INSTANCE_NAME ="project-db"
  
