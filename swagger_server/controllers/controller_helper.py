@@ -440,6 +440,31 @@ def update_package_by_id(content, id, name, version):
     
     return return_code
 
+
+
+def get_packages_by_name(name):
+    '''
+    Params
+        name for the package whose history we desire.
+    Returns
+        A dict containing the versions
+    '''
+    desired_projects = Projects.query.filter(Projects.name == name).all()
+    
+    if (desired_projects == []):
+        return 400
+    
+    meta_data = []
+    for project in desired_projects:
+        this_data = {}
+        this_data['name'] = project.name
+        this_data['id'] = project.id
+        this_data['version'] = project.version
+        meta_data.append(this_data)
+    
+    return meta_data
+
+
 def get_package_by_id(id):
     '''
         Get a package by id

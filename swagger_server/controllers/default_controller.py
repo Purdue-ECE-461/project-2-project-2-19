@@ -74,7 +74,9 @@ def package_by_name_get(name, x_authorization=None):  # noqa: E501
         name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    
+    ret = controller_helper.get_packages_by_name(name)
+    return ret
 
 
 def package_create(body, x_authorization=None):  # noqa: E501
