@@ -104,16 +104,6 @@ def package_create(body, x_authorization=None):  # noqa: E501
     print (github_repo_url)
     if (github_repo_url == -1):
         return 'Failure'
-    
-    pretend_score_array = [0.9, 0.4, 0.6, 5.5, 1.4, 5.6]
-    
-    for scores in pretend_score_array:
-        if (scores >= 0.5):
-            pass
-        else:
-            # delete the zip file uploaded, it isn't ingestible.
-            pass
-            
 
     return 'Success'
 
@@ -201,8 +191,14 @@ def package_update(body, id, x_authorization=None):  # noqa: E501
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
-
+    
+    
+    
+    ret = controller_helper.update_package_by_id(body.data.content,
+                                              body.metadata.id,
+                                              body.metadata.name,
+                                              body.metadata.version)
+    return ret
 
 def packages_list(body, x_authorization=None, offset=None):  # noqa: E501
     """Get packages

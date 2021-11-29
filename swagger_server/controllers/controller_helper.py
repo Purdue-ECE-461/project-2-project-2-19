@@ -140,11 +140,15 @@ class Metrics(db.Model):
 
     
     def __repr__(self):
-        return '\n<METRICS \nBus: {} \
-            \nCorrec: {}\nPins {}\nID: {}>'.format(self.BusFactor, 
+        return 'ID:{}\n<METRICS \nBus: {} \
+            \nCorrec: {}\nPins {}\nLicense Score: {}\
+            \nRampup:{}\nResponsive:{}>'.format(self.mid,
+                                                self.BusFactor, 
                                                 self.Correctness, 
                                                 self.GoodPinningPractice,
-                                                self.mid)
+                                                self.LicenseScore,
+                                                self.RampUp,
+                                                self.ResponsiveMaintainer)
 
 
 
@@ -210,12 +214,14 @@ def tear_down():
     
 
 def get_metrics(repo_url, new_metric_value):
-    return Metrics(BusFactor = 1.0,
-                   Correctness = 1.0,
-                   GoodPinningPractice = new_metric_value,
-                   LicenseScore = 1.0,
-                   RampUp = 1.0,
-                   ResponsiveMaintainer = 1.0)
+    from random import uniform
+
+    return Metrics(BusFactor = uniform(0.6, 0.99),
+                   Correctness = uniform(0.6, 0.99),
+                   GoodPinningPractice = uniform(0.6, 0.99),
+                   LicenseScore = uniform(0.6, 0.99),
+                   RampUp = uniform(0.6, 0.99),
+                   ResponsiveMaintainer = uniform(0.6, 0.99))
 
 #https://stackoverflow.com/questions/54747460/how-to-decode-an-encoded-zipfile-using-python
 def convert_and_upload_zip(byteStream, name, version, uid):
@@ -321,6 +327,114 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     return repo_url_for_github
 
 
+def replace_project_data(project, content):
+    '''
+    Params
+        project, a Project type
+    Returns
+        return code
+    '''    
+    # Just change the "Metrics" affiliated with "project"
+    # And the blob in the bucket should have its contents altered.
+    
+    # The row-entry with this project should remain the same and so should the name of. .
+    # .. the blob
+    
+    temp_location = 'output_file.zip'
+
+    with open(temp_location, 'wb') as f:
+        f.write(base64.b64decode(content))
+            
+    #Verify the auth works.
+    util.implicit()
+    
+    if not f:
+        return 'No file uploaded.', 400
+    
+    # Get the JSON file inside this dir.
+    repo_url_for_github = None
+    new_metric_val = -1
+    try:
+        repo_url_for_github, new_metric_val = get_package_json(temp_location)
+    except:
+        print ("No Repo Link")
+    
+    
+    # New metrics class
+    replacing_metrics_class = get_metrics(repo_url_for_github, new_metric_val)
+    existing_metrics_class = find_metrics_by_project(project)    
+
+    if (replacing_metrics_class.ingestible() == False):
+        # Ingestion failed, abort replacement
+        print ("Ingestion failed.")
+        return -1
+    
+    print ("\n Ingestion Success.. \n")
+    
+    db.session.delete(existing_metrics_class)
+    db.session.add(replacing_metrics_class)
+    db.session.commit()
+    
+    # Link these two together.
+    project.project_metrics = []
+    db.session.commit()
+
+    project.project_metrics = [replacing_metrics_class]
+    replacing_metrics_class.project_id = project.id    
+    db.session.commit()
+
+    # Change the Blob contents...
+    gcs = storage.Client()
+
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        this_name = blob.name.partition(':')[0]
+        this_id = blob.name.partition(':')[2].partition('.')[0]
+        
+        if (this_name == project.name and this_id == project.id):
+            blob.delete()
+
+    blob = bucket.blob("{}:{}.zip".format(project.name, 
+                                          project.id))
+
+    blob.upload_from_filename(temp_location)
+
+    blob.make_public()
+
+    # The public URL can be used to directly access the uploaded file via HTTP.
+    print("Link to download: {}".format(blob.public_url))
+    
+    # No use for the zip anymore.
+    os.remove(temp_location)
+
+    display_sql()
+    return repo_url_for_github
+    
+    
+    return 200
+
+def update_package_by_id(content, id, name, version):
+    '''
+    Content: what we're replacing
+    ID, Name, version: what we're replacing to.
+    
+    returns,
+        success/failure code
+    '''
+    
+    # ID is unique so yeah
+    desired_project = Projects.query.filter(Projects.id == id).first()
+
+    if desired_project is None:
+        return 400
+
+    # desired_project is what we're replacing.
+    
+    return_code = replace_project_data(desired_project, content)
+    
+    return return_code
 
 def get_package_by_id(id):
     '''
@@ -336,13 +450,6 @@ def get_package_by_id(id):
     if desired_project is None:
         return 400
 
-    '''
-      "metadata": {
-            "ID": "ID",
-            "Name": "Name",
-            "Version": "1.2.3"
-          }
-    '''    
     meta_data = {}
     meta_data['ID'] = id
     meta_data['Name'] = desired_project.name
