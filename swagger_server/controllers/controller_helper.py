@@ -143,6 +143,16 @@ class Metrics(db.Model):
                 self.ResponsiveMaintainer >= 0.5)
 
 
+    def get_metrics(self):
+        ret = {}
+        ret['BusFactor'] = self.BusFactor
+        ret['Correctness'] = self.Correctness
+        ret['GoodPinningPractice'] = self.GoodPinningPractice
+        ret['LicenseScore'] = self.LicenseScore
+        ret['RampUp'] = self.RampUp
+        ret['ResponsiveMaintainer'] = self.ResponsiveMaintainer
+        
+        return ret
     
     def __repr__(self):
         return 'ID:{}\n<METRICS \nBus: {} \
@@ -464,6 +474,16 @@ def get_packages_by_name(name):
     
     return meta_data
 
+
+def get_rating_by_id(id):
+    desired_project = Projects.query.filter(Projects.id == id).first()
+    
+    if (desired_project is None):
+        return 400
+    
+    metric_class = find_metrics_by_project(desired_project)
+    
+    return metric_class.get_metrics()
 
 def get_package_by_id(id):
     '''
