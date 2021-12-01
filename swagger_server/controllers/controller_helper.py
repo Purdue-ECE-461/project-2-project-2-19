@@ -550,6 +550,37 @@ def delete_package_by_name(name):
     return 200
 
 
+
+def paginate(page_offset):
+
+    # Take each page as 30 rows.
+    # list_blobs is already paginating it, thus just use a simple counter to return JSON
+    
+    gcs = storage.Client()
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    
+    desired_targets = list(bucket.list_blobs())[(page_offset - 1) * 30: page_offset * 30]    
+
+    ret = []
+    
+    for blobs in desired_targets:
+        this_dict = {}
+        this_dict['name'] = blobs.name
+        if (blobs.id.partition(':')[2].partition('.')[0] == ""):
+            this_dict['id'] = 'No Id Found'
+        else:
+            this_dict['id'] = blobs.id.partition(':')[2].partition('.')[0]
+        this_dict['size'] = blobs.size
+        this_dict['md5_hash'] = blobs.md5_hash
+        
+        ret.append(this_dict)
+
+    print (ret)
+    
+    if (ret == []):
+        ret = ['No such page exists']
+    return ret
+
 def delete_package_by_id(id):
     '''
     Deletes only THIS version of the package.    

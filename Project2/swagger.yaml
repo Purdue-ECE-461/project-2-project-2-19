@@ -20,7 +20,7 @@ paths:
       \ to enumerate all packages, provide an array with a single PackageQuery whose\
       \ name is \"*\".\n\nThe response is paginated; the response header includes\
       \ the offset to use in the next query."
-    get:
+    post:
       summary: Get packages
       description: Get any packages fitting the query.
       operationId: packages_list
@@ -41,14 +41,6 @@ paths:
         explode: true
         schema:
           $ref: '#/components/schemas/EnumerateOffset'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/PackageQuery'
-        required: true
       responses:
         "200":
           description: List of packages
@@ -587,4 +579,3 @@ components:
       name: X-Authorization
       in: header
       x-apikeyInfoFunc: swagger_server.controllers.authorization_controller.check_UserAndPasswordYieldsToken
-

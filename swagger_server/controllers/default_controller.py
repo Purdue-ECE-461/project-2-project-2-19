@@ -222,11 +222,10 @@ def packages_list(body, x_authorization=None, offset=None):  # noqa: E501
     if connexion.request.is_json:
         body = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
     if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
         offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
-        
-    return 'do some magic!'
+
+    ret = controller_helper.paginate(int(offset))
+    return ret
 
 
 def registry_reset(x_authorization=None):  # noqa: E501
