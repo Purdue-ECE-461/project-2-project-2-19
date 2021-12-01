@@ -38,6 +38,8 @@ body{
     font-size: 30px;
     width: 275px;
     max-width: 275px;
+
+    
     position: relative;
     display: flex;
     flex-direction: column;
@@ -51,14 +53,10 @@ body{
     margin-bottom: 25px;
 }
 
-.content-card{
-    display: flex;
-    height: 100%;
-    width: 80%;
-    overflow-x: hidden;
-    
-    justify-content: center;
-    align-items: center;
+.content-title{
+    overflow:hidden;
+    max-width: 16ch;
+    max-height: 50px;
 }
 
 
@@ -85,7 +83,7 @@ body{
     position: relative;
     
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 35px;
     
     margin-top: 50px;    

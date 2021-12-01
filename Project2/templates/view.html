@@ -46,11 +46,17 @@
     {% for name, id, size  in result %}
         <div class="card">
             <div class="content-card">
-            {{name}}
-            <br> <br>
-            ID: {{id}}
-            <br> <br>
-            {{size}} bytes
+            <div class="content-title">
+                {{name | truncate(16, True, '')}}
+            </div>
+            <div style="height: 15px;"> </div>
+            <div class="content-id">
+                ID: {{id}}
+            </div>
+            <div style="height: 15px;"> </div>
+            <div class="content-size">
+                {{size}} bytes
+            </div>
             </div>
           </div>
     {%endfor%}  
