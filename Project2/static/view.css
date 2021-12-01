@@ -14,7 +14,7 @@ body{
     border-bottom: 2px solid #D2D2D2;
 }
 
-#dark-mode-item-one{
+.dark-mode-item-one{
     height: 100%;
     width: 200px;
     display: flex;
@@ -22,7 +22,7 @@ body{
     justify-content: center;
 }
 
-#content-light-btn{
+.content-light-btn{
     height: 30px;
     
     font-size: 2em;
@@ -60,7 +60,7 @@ body{
 }
 
 
-#light-mode-btn{
+.light-mode-btn{
     cursor: pointer;
     border: none;
     background-color: inherit;
