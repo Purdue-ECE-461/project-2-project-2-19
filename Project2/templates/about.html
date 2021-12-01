@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 
     <header>
         <link rel="stylesheet" href="{{ url_for('static', filename='about.css') }}">
@@ -26,11 +26,13 @@
                 </div>
             </div>
             
-            <div style="height: 20px"> </div>
-        
+            <div style="height: 10px"> </div>
             <div class="container-below">
                 <div class="listcontentwrapper">
                     <h1 style="text-align:center; color:rgba(0, 0, 0, 0.7); font-family: Denso Var, sans-serif; text-decoration: underline"> About Page </h1>
+                <div style="height: 15px"> </div>
+                    
+                <img src={{  url_for('static', filename='ada_compliance.png') }} alt="Compliance Proof">
 
                   <div class="list_items">
                 <div class="text_wrapper">
@@ -40,6 +42,7 @@
                         <p> This project is a NPM-registry with authentication. </p>                   
                         <p> Made as a Final Project for ECE-461. </p>                   
                         <p> Can use with a Rest-API or a minimalistic front-end. </p>
+                        <p> This page is ADA-Compliant with the use of axe DevTools. </p>
                     </div>
                 </div>
 
@@ -65,7 +68,8 @@
                         <a class="a_link2" href="https://github.com/gjairath?tab=repositories">
                         A Shameless Plug to my other Side-Projects
                         </a>
-                        
+
+
                     </p>
                     </div>
                     

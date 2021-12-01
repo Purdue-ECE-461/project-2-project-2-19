@@ -148,8 +148,8 @@ code {
 }
 
 .a_link2:hover{
-    font-size: 20px;
-    transition: all 0.35s ease-in;
+    font-size: 17px;
+    transition: all 0.25s ease-in;
 }
 
 .content{

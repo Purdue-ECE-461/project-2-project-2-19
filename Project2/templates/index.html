@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 
     <header>
         <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
@@ -7,7 +7,7 @@
     </header>
 
     <title>NPM-Registry Group 19</title>
-
+<main>
         <div class="parent">
 
     <div class="flash-messages" id="flashed">
@@ -49,6 +49,7 @@
                             <p style="text-align: left; font-size:2.3rem;">Upload</p>
                         <form method="POST" action="{{ url_for('upload') }}" enctype = "multipart/form-data">
                             <div style="height: 25px">
+                            <label for="zip_file">Zip File: </label> 
                                 <input type="file" name="file" id="zip_file" accept=".zip,.rar,.7zip">
                                          <input type = "submit"/>
 
@@ -73,7 +74,7 @@
                 </div>
             </div>
         </div>
-        
+</main>
         
 <script type="text/javascript">window.setTimeout("document.getElementById('flashed').style.display='none';", 4500); </script>
 
