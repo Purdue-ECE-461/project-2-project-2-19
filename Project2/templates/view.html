@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+		<title>View NPM-Registry</title>
 
 <head>
 </head>
@@ -8,9 +9,9 @@
 
     <div class="top-banner" id="top-banner">
     
-        <div id="dark-mode-item-one">
-                <a href="/home" style="text-decoration: none;" id="light-mode-btn" >         
-                    <div id="content-light-btn" style="padding-top: 8px">
+        <div id="dark-mode-item-one1">
+                <a href="/home" style="text-decoration: none;" id="light-mode-btn1" >         
+                    <div style="padding-top: 8px">
                     Home
                     </div>
                     
@@ -18,9 +19,9 @@
 
         </div>
     
-        <div id="dark-mode-item-one">
-                <a href="/about" style="text-decoration: none;" id="light-mode-btn" >         
-                    <div id="content-light-btn" style="padding-top: 8px">
+        <div id="dark-mode-item-one2">
+                <a href="/about" style="text-decoration: none;" id="light-mode-btn2" >         
+                    <div id="content-light-btn2" style="padding-top: 8px">
                     About
                     </div>
                     
@@ -37,7 +38,7 @@
                 </button>
 
         </div>    </div>
-        
+        <main>
 <!-- body below -->
     <div id="container-below">
 
@@ -61,7 +62,7 @@
           </div>
     {%endfor%}  
     </div>
-            
+        </main>
 </body>
   
 <link rel="stylesheet" href="{{ url_for('static', filename='view.css') }}">
