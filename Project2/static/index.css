@@ -82,11 +82,9 @@ code {
 
 }
 
-
-.a-link:hover{
-    color: -webkit-link;
+.links{
+    text-decoration: none;
 }
-
 
 .navbar-container{
     width: 100%;

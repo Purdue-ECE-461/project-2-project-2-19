@@ -101,7 +101,7 @@ def about():
 @app.route("/view")
 def view():
     
-    return render_template("about.html")
+    return render_template("view.html")
 
 
 if __name__ == "__main__":
