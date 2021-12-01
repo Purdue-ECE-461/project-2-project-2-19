@@ -9,20 +9,33 @@
     <div class="top-banner" id="top-banner">
     
         <div id="dark-mode-item-one">
+                <a href="/home" style="text-decoration: none;" id="light-mode-btn" >         
+                    <div id="content-light-btn" style="border-bottom: 5px dotted #000; padding-top: 5px">
+                    Home
+                    </div>
+                    
+                </a>
+
+        </div>
+
+        <div id="dark-mode-item-one" style="margin-left: auto">
                 <button id="light-mode-btn" >         
                     <div id="content-light-btn">
-                    NPM-Registry                        
+                    NPM-Registry
                     </div>
-
+                    
                 </button>
-        </div>
-     
-    </div>
+
+        </div>    </div>
         
 <!-- body below -->
     <div id="container-below">
 
             <div id="card-grid">
+                {% for key in result %}
+                    {{key}}
+                {% endfor %}
+
             </div>                    
     </div>
             

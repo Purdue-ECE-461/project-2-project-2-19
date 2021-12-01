@@ -101,7 +101,7 @@ def about():
 @app.route("/view")
 def view():
     
-    return render_template("view.html")
+    return render_template("view.html", result=['swag', 'swags'])
 
 
 if __name__ == "__main__":
