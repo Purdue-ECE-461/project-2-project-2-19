@@ -10,14 +10,24 @@
     
         <div id="dark-mode-item-one">
                 <a href="/home" style="text-decoration: none;" id="light-mode-btn" >         
-                    <div id="content-light-btn" style="border-bottom: 5px dotted #000; padding-top: 5px">
+                    <div id="content-light-btn" style="padding-top: 8px">
                     Home
                     </div>
                     
                 </a>
 
         </div>
+    
+        <div id="dark-mode-item-one">
+                <a href="/about" style="text-decoration: none;" id="light-mode-btn" >         
+                    <div id="content-light-btn" style="padding-top: 8px">
+                    About
+                    </div>
+                    
+                </a>
 
+        </div>
+        
         <div id="dark-mode-item-one" style="margin-left: auto">
                 <button id="light-mode-btn" >         
                     <div id="content-light-btn">
@@ -32,11 +42,18 @@
     <div id="container-below">
 
             <div id="card-grid">
-                {% for key in result %}
-                    {{key}}
-                {% endfor %}
 
-            </div>                    
+    {% for name, id, size  in result %}
+        <div class="card">
+            <div class="content-card">
+            {{name}}
+            <br> <br>
+            ID: {{id}}
+            <br> <br>
+            {{size}} bytes
+            </div>
+          </div>
+    {%endfor%}  
     </div>
             
 </body>

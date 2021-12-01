@@ -100,9 +100,28 @@ def about():
 
 @app.route("/view")
 def view():
-    
-    return render_template("view.html", result=['swag', 'swags'])
+    import requests
 
+    headers = {
+        'X_Authorization': 'fsafsa',
+    }
+    
+    params = (
+        ('offset', '1'),
+    )
+    
+    response = requests.post('http://localhost:5000/packages', headers=headers, params=params)
+    
+    names_array = []
+    id_array = []
+    size_array = []
+    
+    for item in response.json():
+        names_array.append(item['name'].partition(':')[0])
+        id_array.append(item['id'])
+        size_array.append(item['size'])
+        
+    return render_template("view.html", result=zip(names_array, id_array, size_array))
 
 if __name__ == "__main__":
     app.run(debug=True)
