@@ -44,6 +44,9 @@ def get_pin_value(data):
                 float, new metric.
     '''
     
+    # 1.2.X is good.
+    # ~ or ^ doesnt matter
+    
     dict_deps = data['dependencies']
 
 # either in an exact, bounded range, or tilde/carat range forma

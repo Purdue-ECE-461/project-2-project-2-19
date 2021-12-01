@@ -34,42 +34,75 @@ def upload():
         https://cloud.google.com/appengine/docs/flexible/python/using-cloud-storage
     '''
     if request.method == 'POST':
-        
-        #Verify the auth works.
-        util.implicit()
-        
+                
         f = request.files['file']
         
         if not f:
             return 'No file uploaded.', 400
-
-        gcs = storage.Client()
-        # Get the bucket that the file will be uploaded to.
-        bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
-    
-        # Create a new blob and upload the file's content.
-        blob = bucket.blob(f.filename)
-    
-        blob.upload_from_string(
-            f.read(),
-            content_type=f.content_type
-        )
-    
-        # Make the blob public. This is not necessary if the
-        # entire bucket is public.
-        # See https://cloud.google.com/storage/docs/access-control/making-data-public.
-        blob.make_public()
-    
-        # The public URL can be used to directly access the uploaded file via HTTP.
-        print(blob.public_url)
         
-        flash("File added to the Cloud")
+        name = request.form.get('name')
+        
+        if not name:
+            return 'No Name mentioned', 400
+        
+        version = request.form.get("version")
+        
+        if not version:
+            return 'No Version mentioned', 400
+        
+        
+        # Lazy-load the libraries.
+        import requests
+        from requests.structures import CaseInsensitiveDict
+        import base64
+        
+        data = f.read()
+        encoded_data = base64.b64encode(data)
+        
+        url = "http://localhost:5000/package"
+        
+        headers = CaseInsensitiveDict()
+        headers["X_Authorization"] = "fdsfdsfds"
+        headers["Content-Type"] = "application/json"
+        
+        s_name = '"' + name + '"'
+        s_version = '"' + version + '"'
+        s_content = '"' + str(encoded_data) + '"'
+        
+        data = """
+        {
+          "data": {
+            "Content": %s,
+            "JSProgram": "JSProgram",
+            "URL": "URL"
+          },
+          "metadata": {
+            "ID": "ID",
+            "Name": %s,
+            "Version": %s
+          }
+        }
+        """ % (s_content, s_name, s_version)
+                        
+        resp = requests.post(url, headers=headers, data=data)
+        
+        print(resp.status_code)
+        
+        if (resp.status_code == 200):
+            flash("File added to the Cloud.")
         
     return render_template("index.html", title="docs page")
 
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+
+@app.route("/view")
+def view():
+    
+    return render_template("about.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)

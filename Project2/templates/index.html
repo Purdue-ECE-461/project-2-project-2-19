@@ -48,15 +48,21 @@
 
                             <p style="text-align: left; font-size:2.3rem;">Upload</p>
                         <form method="POST" action="{{ url_for('upload') }}" enctype = "multipart/form-data">
-                            <div style="height: 25px">
-                            <label for="zip_file">Zip File: </label> 
+                            <div class="form-items" style="height: 25px">
+                            
+                            <label for="name_input">Name: </label> 
+                                <input class="i" type="text" name="name" id="name_input" accept=".zip,.rar,.7zip">
+                            <label for="version_input">Version: </label> 
+                                <input style="width: 70px;" class="i" name="version" type="text" id="version_input" accept=".zip,.rar,.7zip">
+                            <label for="zip_file">Zip: </label> 
                                 <input type="file" name="file" id="zip_file" accept=".zip,.rar,.7zip">
-                                         <input type = "submit"/>
+                                                                         
+                            <input type = "submit"/>
 
                             </div>
                         </form>
                         
-                                <p> Upload a Package in Base64 String. [Will support B64 later]. </p>
+                                <p> Upload a Package in Zip Format. </p>
                                 <p> </p>
                             </div>
                         </li>
