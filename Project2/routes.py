@@ -15,6 +15,8 @@ import os
 from flask import render_template, flash, request
 from google.cloud import storage
 
+import connexion
+
 @app.route("/")
 @app.route("/home")
 def homepage():
@@ -26,6 +28,25 @@ def homepage():
 @app.route("/docs")
 def docs():
     return render_template("index.html", title="docs page")
+
+@app.route("/reset", methods=['DELETE'])
+def registry_reset(x_authorization=None):  # noqa: E501
+    """registry_reset
+
+     # noqa: E501
+
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: None
+    """
+    return 'Wiped SQL and Blobs.!'
+
+
+@app.route("/package", methods=['POST'])
+def package_create(body=None, x_authorization=None):  # noqa: E501
+    print (connexion.request.get_json())
+    return "S"
 
 @app.route("/upload", methods=['POST', 'GET'])
 def upload():
@@ -59,7 +80,7 @@ def upload():
         data = f.read()
         encoded_data = base64.b64encode(data)
         
-        url = "http://localhost:5000/package"
+        url = "https://purde-final-project.appspot.com/package"
         
         headers = CaseInsensitiveDict()
         headers["X_Authorization"] = "fdsfdsfds"

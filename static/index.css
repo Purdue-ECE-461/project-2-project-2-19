@@ -3,6 +3,9 @@ html, #root, .App, .parent {
 
 }
 
+body{
+	font-family: "Denso Var", sans-serif;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -43,6 +46,12 @@ code {
     
 }
 
+.i{
+    max-width: 145px;
+    height: 22px;
+    margin-right: 25px;
+}
+
 .text-content{  /* the stuff on the left titel, desc, link */
     height: 100%;
     width: 90%;
@@ -73,11 +82,9 @@ code {
 
 }
 
-
-.a-link:hover{
-    color: -webkit-link;
+.links{
+    text-decoration: none;
 }
-
 
 .navbar-container{
     width: 100%;
