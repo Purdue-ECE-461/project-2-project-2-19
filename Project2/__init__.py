@@ -20,3 +20,4 @@ flask_app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+mysqldb://root:{PASSWORD}@{
 flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 
 from Project2 import routes
+from Project2 import apiroutes

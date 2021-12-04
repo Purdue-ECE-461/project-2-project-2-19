@@ -14,9 +14,6 @@ import os
 
 
 
-# I dont know why I need to do this, its stupid. but thats life.
-GAC = "C:\\Users\\garvi\\Downloads\\purdue-project-2-c3aa3b050970.json"
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GAC
 
 CLOUD_STORAGE_BUCKET = os.getenv('CLOUD_STORAGE_BUCKET')
 

@@ -19,15 +19,13 @@ from google.cloud import storage
 from Project2 import util
 from Project2 import macros
 from Project2 import app
+from swagger_server.controllers import session_config
 
 flask_app = app.app
 
 print(flask_app.config)
-db = SQLAlchemy(flask_app)
 
-
-
-
+session = session_config.return_session()
 
 
 def child_dirs(path):
@@ -101,107 +99,30 @@ def get_package_json(temp_location_of_zip):
     return (data['repository'], new_metric_value)    
 
 
-# User ORM for SQLAlchemy
-class Projects(db.Model):
-    print(db)
-    id = db.Column(db.Integer, primary_key = True, nullable = False, unique = True)
-    name = db.Column(db.String(50), nullable = False, unique = False)
-    version = db.Column(db.String(50), nullable = False, unique = False)
-    
-    # 1 row of metrics, forward link
-    project_metrics = db.relationship("Metrics", back_populates="project_owner")    
-
-    
-    def __repr__(self):
-        return f'\n========\nID: {self.id}\nName: {self.name}\nVersion: {self.version}\nMetrics: {self.project_metrics}\n=======\n'
-
-
-def testing():
-    print ("Yes")
-    db.create_all()
-    db.session.commit()
-
-class Metrics(db.Model):
-    mid = db.Column(db.Integer, 
-                    primary_key=True, nullable = False, unique = True)
-    
-    BusFactor = db.Column(db.Float, 
-                         index=True)
-    Correctness = db.Column(db.Float, index = True)
-    GoodPinningPractice = db.Column(db.Float, index = True)
-    LicenseScore = db.Column(db.Float, index = True)
-    RampUp = db.Column(db.Float, index = True)
-    ResponsiveMaintainer = db.Column(db.Float, index=True)
-
-    
-    # Back link to the project that can have 1 row of metrics.
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
-
-
-    # There is no reason to set this.
-    project_owner = db.relationship("Projects", back_populates="project_metrics")
-    
-    
-    def ingestible(self):
-        return (self.BusFactor >= 0.5 and 
-                self.Correctness >= 0.5 and
-                self.GoodPinningPractice >= 0.5 and
-                self.LicenseScore >= 0.5 and
-                self.RampUp >= 0.5 and
-                self.ResponsiveMaintainer >= 0.5)
-
-
-    def get_metrics(self):
-        ret = {}
-        ret['BusFactor'] = self.BusFactor
-        ret['Correctness'] = self.Correctness
-        ret['GoodPinningPractice'] = self.GoodPinningPractice
-        ret['LicenseScore'] = self.LicenseScore
-        ret['RampUp'] = self.RampUp
-        ret['ResponsiveMaintainer'] = self.ResponsiveMaintainer
-        
-        return ret
-    
-    def __repr__(self):
-        return 'ID:{}\n<METRICS \nBus: {} \
-            \nCorrec: {}\nPins {}\nLicense Score: {}\
-            \nRampup:{}\nResponsive:{}>'.format(self.mid,
-                                                self.BusFactor, 
-                                                self.Correctness, 
-                                                self.GoodPinningPractice,
-                                                self.LicenseScore,
-                                                self.RampUp,
-                                                self.ResponsiveMaintainer)
-
-
-
 def display_sql():
     print ("\n====================\n")
-    for prj in Projects.query.all():
-        print (prj)
-    print ("\n====================\n\n")
-    for metr in Metrics.query.all():
-        print (metr)        
+    print (session.query(session_config.Users).all())
+    print (session.query(session_config.Projects).all())
+    print (session.query(session_config.Metrics).all())    
     print ("\n====================\n\n")
     
 def add_project_db(name, version):
     print (name, version)
-    project = Projects.query.filter(Projects.version == version).filter(Projects.name == name).first()
     
-#    db.session.merge()
-#    db.create_all()
-        
+    project = session.query(session_config.Projects).filter(session_config.Projects.version == version).\
+                                                    filter(session_config.Projects.name == name).first()
+
     display_sql()
     # This project is new.
     if not project:
         try:
             print ("adding new project")
-            new_project = Projects(
+            new_project = session_config.Projects(
                         name = name,
                         version = version
                 )
-            db.session.add(new_project)
-            db.session.commit()
+            session.add(new_project)
+            session.commit()
             
             print ("Done adding project, returning 200")
             return 200
@@ -219,9 +140,10 @@ def add_project_db(name, version):
 
 def tear_down():
     print ("Deleting the SQL Database...")
-    db.session.query(Metrics).delete()
-    db.session.query(Projects).delete()
-    db.session.commit()
+    session.query(Metrics).delete()
+    session.query(Projects).delete()
+    session.query(Users).delete()
+    session.commit()
     print ("Done")
 
 
@@ -239,7 +161,7 @@ def tear_down():
 def get_metrics(repo_url, new_metric_value):
     from random import uniform
 
-    return Metrics(BusFactor = uniform(0.6, 0.99),
+    return session_config.Metrics(BusFactor = uniform(0.6, 0.99),
                    Correctness = uniform(0.6, 0.99),
                    GoodPinningPractice = uniform(0.6, 0.99),
                    LicenseScore = uniform(0.6, 0.99),
@@ -264,19 +186,22 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     '''
 
   #  tear_down()
-    
+    print ("HEY")
     response_code = add_project_db(name, version)
     
     if (response_code != 200):
         return 'Server Error.', 500
     
-    temp_location = 'output_file.zip'
+    temp_location = '/tmp/output_file.zip'
 
     with open(temp_location, 'wb') as f:
         f.write(base64.b64decode(byteStream))
             
     #Verify the auth works.
     util.implicit()
+    
+    
+    print ("YES")
     
     if not f:
         return 'No file uploaded.', 400
@@ -292,7 +217,9 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     # find the project that was recently created again.
             # since version and name both have to be the same find that.
-    new_created_project = Projects.query.filter(Projects.version == version).filter(Projects.name == name).first()
+    new_created_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.version == version).\
+                        filter(session_config.Projects.name == name).first()
 
     
     print ("Will link this: {}".format(new_created_project.name))
@@ -305,8 +232,8 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     print (metrics_class)
     
     if (metrics_class.ingestible() == False):
-        db.session.delete(new_created_project)
-        db.session.commit()
+        session.delete(new_created_project)
+        session.commit()
         
         print ("Ingestion failed.")
         return 'Ingestion Failed.', 400
@@ -315,14 +242,14 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     # Add the metric class to SQL instance, 
     # .. link with the new project, upload to the bucket.
-    db.session.add(metrics_class)
-    db.session.commit()
+    session.add(metrics_class)
+    session.commit()
     
     # Link these two together.
     new_created_project.project_metrics = [metrics_class]
     metrics_class.project_id = new_created_project.id
     
-    db.session.commit()
+    session.commit()
     
     # ----------------------------------------------------------------- #
 

@@ -43,10 +43,8 @@ class Projects(Base):
 
 class Metrics(Base):
     __tablename__ = 'metrics'
-    id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-
     mid = Column(Integer, 
-                    primary_key=True, nullable = False, unique = True)
+                    primary_key=True, nullable = False, unique = True, autoincrement=True)
     
     BusFactor = Column(Float, 
                          index=True)
@@ -123,18 +121,52 @@ pool = create_engine(
     creator=getconn,
 )        
 
-if __name__ == "__main__":
+
+
+def return_session():
     db = pool.connect()
     Session = sessionmaker(bind=pool)
-    Base.metadata.create_all(pool)
-    
-    #ed_user = Users(name='ed', password="sex")
-    
-    
     session = Session()
-    #session.add(ed_user)
-    #session.commit()
+
+    return session
+
+
+def update_session():
+     db = pool.connect()
+     Session = sessionmaker(bind=pool)
+     Base.metadata.create_all(pool)
+     
+     
+def tear_session():
+    db = pool.connect()
+    Session = sessionmaker(bind=pool)
+    session = Session()
+
+    session.query(Metrics).delete()
+    session.query(Projects).delete()
+    session.query(Users).delete()
+    session.commit()
     
-    print (session.query(Users).all())
-    print (session.query(Projects).all())
-    print (session.query(Metrics).all())
+    
+def make_table():
+    db = pool.connect()
+    Session = sessionmaker(bind=pool)
+    
+    Base.metadata.create_all(pool) 
+    
+
+# if __name__ == "__main__":
+#     db = pool.connect()
+#     Session = sessionmaker(bind=pool)
+#     Base.metadata.create_all(pool)
+    
+#     #ed_user = Users(name='ed', password="sex")
+    
+    
+#     session = Session()
+#     #session.add(ed_user)
+#     #session.commit()
+    
+#     print (session.query(Users).all())
+#     print (session.query(Projects).all())
+#     print (session.query(Metrics).all())
