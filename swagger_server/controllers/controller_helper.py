@@ -498,6 +498,9 @@ def paginate(page_offset):
 
     ret = []
     
+    
+    print (desired_targets)
+    
     for blobs in desired_targets:
         this_dict = {}
         this_dict['name'] = blobs.name
@@ -510,11 +513,13 @@ def paginate(page_offset):
         
         ret.append(this_dict)
 
+    print ("BELOW IS RETURN FROM BACK END")
     print (ret)
     
     if (ret == []):
         ret = ['No such page exists']
-    return ret
+    
+    return json.dumps(ret)
 
 def delete_package_by_id(id):
     '''

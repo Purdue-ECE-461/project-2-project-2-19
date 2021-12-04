@@ -53,7 +53,20 @@ def package_create(body=None, x_authorization=None):  # noqa:
                                                                 body.metadata.version,
                                                                 body.metadata.id)
     
-    return "YO IT WORKED LEL"
+    return "IDk"
+
+
+@app.route("/packages", methods=["POST"])
+def packages_list():
+    offset = 1
+    if connexion.request.is_json:
+        body = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
+    if connexion.request.is_json:
+        offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
+    ret = controller_helper.paginate(int(offset))
+    
+    print ("HERE IS IT IN THE FNAL RETURN")
+    return ret
 
 @app.route("/reset", methods=['DELETE'])
 def registry_reset(x_authorization=None):  # noqa: E501

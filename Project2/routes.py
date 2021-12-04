@@ -98,6 +98,7 @@ def upload():
 def about():
     return render_template("about.html")
 
+import json
 
 @app.route("/view")
 def view():
@@ -111,13 +112,17 @@ def view():
         ('offset', '1'),
     )
     
-    response = requests.post('http://localhost:5000/packages', headers=headers, params=params)
+    response = requests.post('https://purde-final-project.appspot.com/packages', headers=headers, params=params)
     
     names_array = []
     id_array = []
     size_array = []
     
-    for item in response.json():
+    
+    print ("BELOW is repsonse..")
+    print (response.json())
+    
+    for item in (response.json()):
         names_array.append(item['name'].partition(':')[0])
         id_array.append(item['id'])
         size_array.append(item['size'])

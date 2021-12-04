@@ -18,7 +18,7 @@ produces:
 - application/json
 paths:
   "/packages":
-    get:
+    post:
       description: Get any packages fitting the query.
       summary: PackagesList
       operationId: PackagesList
