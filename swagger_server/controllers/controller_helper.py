@@ -21,8 +21,13 @@ from Project2 import macros
 from Project2 import app
 
 flask_app = app.app
+
 print(flask_app.config)
 db = SQLAlchemy(flask_app)
+
+
+
+
 
 
 def child_dirs(path):
@@ -263,7 +268,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     response_code = add_project_db(name, version)
     
     if (response_code != 200):
-        return response_code
+        return 'Server Error.', 500
     
     temp_location = 'output_file.zip'
 
@@ -304,7 +309,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
         db.session.commit()
         
         print ("Ingestion failed.")
-        return -1
+        return 'Ingestion Failed.', 400
     
     print ("\n Ingestion Success.. \n")
     
@@ -341,7 +346,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     os.remove(temp_location)
 
     display_sql()
-    return repo_url_for_github
+    return 'Success. Check the ID in the returned metadata for the official ID.', 201
 
 
 def replace_project_data(project, content):
