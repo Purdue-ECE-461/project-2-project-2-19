@@ -136,19 +136,6 @@ def package_delete(id, x_authorization=None):  # noqa: E501
     ret = controller_helper.delete_package_by_id(id)
     return ret
 
-@app.route("/packages", methods=["POST"])
-def packages_list():
-    offset = 1
-    if connexion.request.is_json:
-        body = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
-    if connexion.request.is_json:
-        offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
-    ret = controller_helper.paginate(int(offset))
-    
-    print ("HERE IS IT IN THE FNAL RETURN")
-    return ret
-
-
 @app.route("/package/<id>/rate", methods=["GET"])
 def package_rate(id=None, x_authorization=None):  # noqa: E501
     """package_rate
@@ -167,9 +154,23 @@ def package_rate(id=None, x_authorization=None):  # noqa: E501
     if connexion.request.is_json:
         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
-    ret = controller_helper.get_rgetating_by_id(id)
+    ret = controller_helper.get_rating_by_id(id)
 
     return ret
+
+@app.route("/packages", methods=["POST"])
+def packages_list():
+    offset = 1
+    if connexion.request.is_json:
+        body = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
+    if connexion.request.is_json:
+        offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
+    ret = controller_helper.paginate(int(offset))
+    
+    print ("HERE IS IT IN THE FNAL RETURN")
+    return ret
+
+
 
 @app.route("/reset", methods=['DELETE'])
 def registry_reset(x_authorization=None):  # noqa: E501

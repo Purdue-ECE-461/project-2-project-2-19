@@ -416,10 +416,10 @@ def get_packages_by_name(name):
 
 
 def get_rating_by_id(id):
-    desired_project = session.query(Projects).filter(session_config.Projects.id == id).first()
+    desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
     
     if (desired_project is None):
-        return 400
+        return 'No such package.', 400
     
     metric_class = find_metrics_by_project(desired_project)
     
