@@ -158,6 +158,52 @@ def package_rate(id=None, x_authorization=None):  # noqa: E501
 
     return ret
 
+
+@app.route("/package/byName/<name>", methods=["GET"])
+def package_by_name_get(name, x_authorization=None):  # noqa: E501
+    """package_by_name_get
+
+    Return the history of this package (all versions). # noqa: E501
+
+    :param name: 
+    :type name: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: List[PackageHistoryEntry]
+    """
+    if connexion.request.is_json:
+        name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    ret = controller_helper.get_packages_by_name(name)
+    return ret
+
+
+@app.route("/package/byName/<name>", methods=["DELETE"])
+def package_by_name_delete(name, x_authorization=None):  # noqa: E501
+    """Delete all versions of this package.
+
+     # noqa: E501
+
+    :param name: 
+    :type name: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    
+    ret = controller_helper.delete_package_by_name(name)
+    return ret
+
+
 @app.route("/packages", methods=["POST"])
 def packages_list():
     offset = 1

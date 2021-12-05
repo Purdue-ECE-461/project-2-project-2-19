@@ -399,10 +399,11 @@ def get_packages_by_name(name):
     Returns
         A dict containing the versions
     '''
-    desired_projects = Projects.query.filter(Projects.name == name).all()
+    desired_projects = session.query(session_config.Projects).\
+                        filter(session_config.Projects.name == name).all()
     
     if (desired_projects == []):
-        return 400
+        return 'No such package.', 400
     
     meta_data = []
     for project in desired_projects:
@@ -412,7 +413,7 @@ def get_packages_by_name(name):
         this_data['version'] = project.version
         meta_data.append(this_data)
     
-    return meta_data
+    return json.dumps(meta_data)
 
 
 def get_rating_by_id(id):
@@ -459,17 +460,17 @@ def delete_package_by_name(name):
     1. Delete from the SQL the project and affiliate metrics.
     2. Delete from the bucket.
     '''
-    desired_projects = Projects.query.filter(Projects.name == name).all()
-    
-    
+    desired_projects = session.query(session_config.Projects).\
+                            filter(session_config.Projects.name == name).all()
+        
     if desired_projects == []:
-        return 400
+        return 'No such package.', 400
     
     for projects in desired_projects:
         # Delete the associoated metrics.
-        db.session.delete(find_metrics_by_project(projects))
-        db.session.delete(projects)
-        db.session.commit()
+        session.delete(find_metrics_by_project(projects))
+        session.delete(projects)
+        session.commit()
         
     gcs = storage.Client()
     bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
@@ -487,7 +488,7 @@ def delete_package_by_name(name):
     # Delete all blobs that contain this name before the :
         
     display_sql()
-    return 200
+    return 'Package is deleted.', 200
 
 
 
