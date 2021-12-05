@@ -295,7 +295,7 @@ def replace_project_data(project, content):
     # The row-entry with this project should remain the same and so should the name of. .
     # .. the blob
     
-    temp_location = 'output_file.zip'
+    temp_location = '/tmp/output_file.zip'
 
     with open(temp_location, 'wb') as f:
         f.write(base64.b64decode(content))
@@ -326,17 +326,17 @@ def replace_project_data(project, content):
     
     print ("\n Ingestion Success.. \n")
     
-    db.session.delete(existing_metrics_class)
-    db.session.add(replacing_metrics_class)
-    db.session.commit()
+    session.delete(existing_metrics_class)
+    session.add(replacing_metrics_class)
+    session.commit()
     
     # Link these two together.
     project.project_metrics = []
-    db.session.commit()
+    session.commit()
 
     project.project_metrics = [replacing_metrics_class]
     replacing_metrics_class.project_id = project.id    
-    db.session.commit()
+    session.commit()
 
     # Change the Blob contents...
     gcs = storage.Client()
@@ -365,10 +365,8 @@ def replace_project_data(project, content):
     os.remove(temp_location)
 
     display_sql()
-    return repo_url_for_github
     
-    
-    return 200
+    return ('Success')
 
 def update_package_by_id(content, id, name, version):
     '''
@@ -380,7 +378,8 @@ def update_package_by_id(content, id, name, version):
     '''
     
     # ID is unique so yeah
-    desired_project = Projects.query.filter(Projects.id == id).first()
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == id).first()
 
     if desired_project is None:
         return 400
@@ -450,7 +449,7 @@ def get_package_by_id(id):
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
-    return sessions.query(Metrics).filter(session_config.Metrics.mid == mid).first()
+    return session.query(session_config.Metrics).filter(session_config.Metrics.mid == mid).first()
 
 def delete_package_by_name(name):
     '''
@@ -536,15 +535,16 @@ def delete_package_by_id(id):
     '''
 
     # ID is unique so yeah
-    desired_project = Projects.query.filter(Projects.id == id).first()
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == id).first()
 
     if desired_project is None:
-        return 400
+        return 'No such package.', 400
 
     # Remvoe the metric first
-    db.session.delete(find_metrics_by_project(desired_project))
-    db.session.delete(desired_project)
-    db.session.commit()
+    session.delete(find_metrics_by_project(desired_project))
+    session.delete(desired_project)
+    session.commit()
     
     gcs = storage.Client()
     bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
@@ -561,4 +561,4 @@ def delete_package_by_id(id):
             blob.delete()
 
     display_sql()    
-    return 200
+    return 'Package is deleted.', 200

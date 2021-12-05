@@ -83,7 +83,7 @@ def package_retrieve(id=None, x_authorization=None):  # noqa: E501
 
 
 @app.route("/package/<id>", methods=["PUT"])
-def package_update(body, id, x_authorization=None):  # noqa: E501
+def package_update(id, body=None, x_authorization=None):  # noqa: E501
     """Update this version of the package.
 
     The name, version, and ID must match.  The package contents (from PackageData) will replace the previous contents. # noqa: E501
@@ -107,12 +107,34 @@ def package_update(body, id, x_authorization=None):  # noqa: E501
     
     
     ret = controller_helper.update_package_by_id(body.data.content,
-                                              body.metadata.id,
+                                              id,
                                               body.metadata.name,
                                               body.metadata.version)
     return ret 
 
 
+
+@app.route("/package/<id>", methods=["DELETE"])
+def package_delete(id, x_authorization=None):  # noqa: E501
+    """Delete this version of the package.
+
+     # noqa: E501
+
+    :param id: Package ID
+    :type id: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    
+    ret = controller_helper.delete_package_by_id(id)
+    return ret
 
 @app.route("/packages", methods=["POST"])
 def packages_list():
