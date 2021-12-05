@@ -273,7 +273,13 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     os.remove(temp_location)
 
     display_sql()
-    return 'Success. Check the ID in the returned metadata for the official ID.', 201
+    
+    meta_data = {}
+    meta_data['Name'] = new_created_project.name
+    meta_data['Version'] = new_created_project.version
+    meta_data['ID'] =new_created_project.id
+    
+    return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
 
 def replace_project_data(project, content):
@@ -411,7 +417,7 @@ def get_packages_by_name(name):
 
 
 def get_rating_by_id(id):
-    desired_project = Projects.query.filter(Projects.id == id).first()
+    desired_project = session.query(Projects).filter(session_config.Projects.id == id).first()
     
     if (desired_project is None):
         return 400
@@ -429,7 +435,7 @@ def get_package_by_id(id):
             id, of the project
     '''
     # ID is unique so yeah
-    desired_project = Projects.query.filter(Projects.id == id).first()
+    desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
 
     if desired_project is None:
         return 400
@@ -444,7 +450,7 @@ def get_package_by_id(id):
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
-    return Metrics.query.filter(Metrics.mid == mid).first()
+    return sessions.query(Metrics).filter(session_config.Metrics.mid == mid).first()
 
 def delete_package_by_name(name):
     '''

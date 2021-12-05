@@ -53,7 +53,65 @@ def package_create(body=None, x_authorization=None):  # noqa:
                                                                 body.metadata.version,
                                                                 body.metadata.id)
     
-    return "IDk"
+    print (response)
+    print (response[1])
+    return response[1]
+
+
+
+@app.route("/package/<id>", methods=["GET"])
+def package_retrieve(id=None, x_authorization=None):  # noqa: E501
+    """package_retrieve
+
+    Return this package. # noqa: E501
+
+    :param id: ID of package to fetch
+    :type id: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: Package
+    """
+    if connexion.request.is_json:
+        id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    
+    ret = controller_helper.get_package_by_id(id)
+    return ret
+
+
+@app.route("/package/<id>", methods=["PUT"])
+def package_update(body, id, x_authorization=None):  # noqa: E501
+    """Update this version of the package.
+
+    The name, version, and ID must match.  The package contents (from PackageData) will replace the previous contents. # noqa: E501
+
+    :param body: 
+    :type body: dict | bytes
+    :param id: 
+    :type id: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: None
+    """
+    if connexion.request.is_json:
+        body = Package.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    
+    
+    ret = controller_helper.update_package_by_id(body.data.content,
+                                              body.metadata.id,
+                                              body.metadata.name,
+                                              body.metadata.version)
+    return ret 
+
 
 
 @app.route("/packages", methods=["POST"])
@@ -66,6 +124,29 @@ def packages_list():
     ret = controller_helper.paginate(int(offset))
     
     print ("HERE IS IT IN THE FNAL RETURN")
+    return ret
+
+
+@app.route("/package/<id>/rate", methods=["GET"])
+def package_rate(id=None, x_authorization=None):  # noqa: E501
+    """package_rate
+
+     # noqa: E501
+
+    :param id: 
+    :type id: dict | bytes
+    :param x_authorization: 
+    :type x_authorization: dict | bytes
+
+    :rtype: PackageRating
+    """
+    if connexion.request.is_json:
+        id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
+
+    ret = controller_helper.get_rgetating_by_id(id)
+
     return ret
 
 @app.route("/reset", methods=['DELETE'])

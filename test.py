@@ -20,5 +20,5 @@ def display_sql():
 
 
 
-session_config.make_table()
+#session_config.make_table()
 display_sql()
