@@ -140,9 +140,9 @@ def add_project_db(name, version):
 
 def tear_down():
     print ("Deleting the SQL Database...")
-    session.query(Metrics).delete()
-    session.query(Projects).delete()
-    session.query(Users).delete()
+    session.query(session_config.Metrics).delete()
+    session.query(session_config.Projects).delete()
+    session.query(session_config.Users).delete()
     session.commit()
     print ("Done")
 

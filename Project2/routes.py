@@ -122,9 +122,17 @@ def view():
     print ("BELOW is repsonse..")
     print (response.json())
     
+    if (response.json() == ['No such page exists']):
+        return render_template("view.html", result=zip(['Nothing here bud'], ['N/A'], ['0']))        
+    
     for item in (response.json()):
         names_array.append(item['name'].partition(':')[0])
         id_array.append(item['id'])
         size_array.append(item['size'])
         
     return render_template("view.html", result=zip(names_array, id_array, size_array))
+
+
+@app.route("/ui1")
+def show_ui():
+    return render_template("ui.html")        
