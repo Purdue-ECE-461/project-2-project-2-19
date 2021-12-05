@@ -234,3 +234,12 @@ def registry_reset(x_authorization=None):  # noqa: E501
     
     controller_helper.tear_down()
     return 'Registry is reset.', 200
+
+
+@app.route("/user", methods=['POST'])
+def add_user(x_auth=None):
+    if connexion.request.is_json:
+        body = (connexion.request.get_json())  # noqa: E501
+    
+    print (body)
+    return body

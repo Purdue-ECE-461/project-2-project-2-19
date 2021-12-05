@@ -17,6 +17,44 @@ consumes:
 produces:
 - application/json
 paths:
+  "/user":
+    post:
+      description: Make a new User.
+      summary: NewUser
+      operationId: NewUser
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: X-Authorization
+        in: header
+        required: false
+        type: string
+        description: ''
+      - name: Content-Type
+        in: header
+        required: false
+        enum:
+        - application/json
+        type: string
+        description: ''
+      - name: body
+        in: body
+        required: true
+        description: ''
+        schema:
+          $ref: '#/definitions/NUser'
+      responses:
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+          headers: {}
+        '200':
+          description: User Made!
+          headers:
+            offset:
+              type: string
   "/packages":
     post:
       description: Get any packages fitting the query.
@@ -364,6 +402,14 @@ definitions:
     required:
     - code
     - message
+  NUser:
+    title: User
+    type: object
+    properties:
+      metadata:
+        $ref: '#/definitions/UserMetadata'
+    required:
+    - metadata
   Package:
     title: Package
     type: object
@@ -403,6 +449,22 @@ definitions:
     - Name
     - Version
     - ID
+  UserMetadata:
+    title: UserMetadata
+    description: >-
+      The "Name" and "Password" are the login details to obtain auth-tokens.
+    type: object
+    properties:
+      Name:
+        description: >-
+          Name of a User.
+          - Names should only use typical "keyboard" characters.
+        type: string
+      Password:
+        type: string
+    required:
+    - Name
+    - Password
   PackageData:
     title: PackageData
     description: >-
