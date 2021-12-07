@@ -11,6 +11,8 @@ import base64
 import os
 import glob
 import json
+import sys
+import subprocess
 from flask_sqlalchemy import SQLAlchemy
 from google.cloud import storage
 
@@ -194,9 +196,31 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     temp_location = '/tmp/output_file.zip'
 
-    with open(temp_location, 'wb') as f:
-        f.write(base64.b64decode(byteStream))
-            
+    if debloat == True:
+        # changed code to debloat before uploading package
+        debloat_location = '/tmp/debloating.py'
+        content = base64.b64decode(byteStream)
+
+        with open(debloat_location, 'wb') as d:
+            d.write(content)
+
+        string = subprocess.check_output(["pyminifier", "-O", "--gzip", "/tmp/debloating.py"])
+        # running debloater/minifying the uploaded package
+        string = string.decode("utf-8")
+        size = len(string)
+        # extracting base64 encoded string from debloater output
+        mod_string = string[:size - 73]
+        mod_string = mod_string[60:]
+
+        with open(temp_location, 'wb') as f:
+            f.write(base64.b64decode(mod_string))
+
+        os.remove(debloat_location)
+    else:
+        with open(temp_location, 'wb') as f:
+            f.write(base64.b64decode(byteStream))
+
+
     #Verify the auth works.
     util.implicit()
     
