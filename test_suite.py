@@ -169,7 +169,6 @@ def test_post_package_user_id():
     }
       
     request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
-    print (request.content)
     assert(json.loads(request.content)["ID"] == 69696969)
      
 
@@ -186,6 +185,31 @@ def test_reset():
   request = requests.delete(requestUrl, headers=requestHeaders)
 
   assert (request.status_code == 200)
+  
+  
+def test_get_package_false():
+  requestUrl = "https://purde-final-project.appspot.com/package/1"
+  print ("GET a package that doesnt exist...")
+  requestHeaders = {
+    "X-Authorization": "",
+    "Accept": "application/json"
+  }
+
+  request = requests.get(requestUrl, headers=requestHeaders)
+
+  assert (request.status_code == 400)
+  
+def test_get_package_true():
+  requestUrl = "https://purde-final-project.appspot.com/package/69696969"
+  print ("GET a package that exists..")
+  requestHeaders = {
+    "X-Authorization": "gsg",
+    "Accept": "application/json"
+  }
+
+  request = requests.get(requestUrl, headers=requestHeaders)
+
+  assert (request.status_code == 200)    
 
 if __name__ == "__main__":
   print ("\nRunning Auth tests..")  
@@ -199,5 +223,8 @@ if __name__ == "__main__":
   test_post_package_2()
   
   test_post_package_user_id()
+  
+  test_get_package_false()
+  test_get_package_true()
   
   

@@ -294,6 +294,9 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
 
+def upload_url(url, name, version, user_id):
+    pass
+
 def replace_project_data(project, content):
     '''
     Params
@@ -450,7 +453,7 @@ def get_package_by_id(id):
     desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
 
     if desired_project is None:
-        return 400
+        return 'No Such Package', 400
 
     meta_data = {}
     meta_data['ID'] = id
@@ -458,7 +461,7 @@ def get_package_by_id(id):
     meta_data['Version'] = desired_project.version
 
 
-    return meta_data
+    return meta_data, 200
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid

@@ -46,10 +46,16 @@ def package_create(body=None, x_authorization=None):  # noqa:
     if connexion.request.is_json:
          x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
-    response = controller_helper.convert_and_upload_zip(body.data.content, 
+    if (body.data.content != ""):
+        response = controller_helper.convert_and_upload_zip(body.data.content, 
                                                                 body.metadata.name,
                                                                 body.metadata.version,
                                                                 body.metadata.id)
+    if (body.data.url != "") :
+        response = controller_helper.upload_url(body.data.url,
+                                                    body.metadata.name,
+                                                    body.metadata.version,
+                                                    body.metadata.id)
     
     print (response)
     print (response[1])
@@ -76,12 +82,10 @@ def package_retrieve(id=None, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
     
     
     ret = controller_helper.get_package_by_id(id)
-    return ret
+    return ret[0], ret[1]
 
 
 @app.route("/package/<id>", methods=["PUT"])
