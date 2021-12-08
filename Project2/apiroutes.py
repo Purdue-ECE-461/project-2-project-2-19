@@ -35,8 +35,6 @@ import connexion
 
 @app.route("/authenticate", methods=['PUT'])
 def create_auth_token():
-    if connexion.request.is_json:
-        body = AuthenticationRequest.from_dict(connexion.request.get_json())  # noqa: E501
     return 'This system does not support authentication.', 501
 
 
@@ -55,7 +53,11 @@ def package_create(body=None, x_authorization=None):  # noqa:
     
     print (response)
     print (response[1])
-    return response[1]
+    
+    if (isinstance(response[1], int)):
+        return response[0], response[1]
+    
+    return response[1], 201
 
 
 
@@ -229,10 +231,8 @@ def registry_reset(x_authorization=None):  # noqa: E501
 
     :rtype: None
     """
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    
     controller_helper.tear_down()
+    print ("HEYYLOO")
     return 'Registry is reset.', 200
 
 
@@ -241,5 +241,4 @@ def add_user(x_auth=None):
     if connexion.request.is_json:
         body = (connexion.request.get_json())  # noqa: E501
     
-    print (body)
-    return body
+    return body["metadata"]
