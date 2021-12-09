@@ -1,4 +1,13 @@
 # project-2-project-2-19
+<h1>Table of contents</h1>
+
+
+| Item | Description | Location |
+|------|-------------|----------|
+| ADA compatible frontend | Source code for the ADA compliant website for the NPM registry       | Project2/ |
+| SQL server          | PSource code for setting up the Backend of the registry               | swagger_server/ |
+| Main app files          | code for main.py, configuration files, test files.       | / |
+
 <br>
 This project is a NPM-registry with authentication. <br>
 
@@ -33,154 +42,4 @@ The link to access the registry is:
 
     https://purde-final-project.appspot.com 
 
-The directory structure for the frontend of our project is as follows:
-    
-    |   apiroutes.py
-    |   macros.py
-    |   routes.py
-    |   swagger.yaml
-    |   util.py
-    |   __init__.py
-    |
-    +---static
-    |       about.css
-    |       ada_compliance.PNG
-    |       index.css
-    |       tutorial_pagination_front.PNG
-    |       ui.css
-    |       view.css
-    |
-    +---templates
-    |       about.html
-    |       index.html
-    |       ui.html
-    |       view.html
-    |
-    \---__pycache__
-            apiroutes.cpython-39.pyc
-            macros.cpython-37.pyc
-            macros.cpython-39.pyc
-            routes.cpython-37.pyc
-            routes.cpython-39.pyc
-            util.cpython-37.pyc
-            util.cpython-39.pyc
-            __init__.cpython-37.pyc
-            __init__.cpython-39.pyc```
-
-The directory structure for our swagger_server is as follows:
-    
-    |   encoder.py
-    |   type_util.py
-    |   util.py
-    |   __init__.py
-    |
-    +---controllers
-    |   |   authorization_controller.py
-    |   |   controller_helper.py
-    |   |   default_controller.py
-    |   |   ranking_module.py
-    |   |   session_config.py
-    |   |   __init__.py
-    |   |
-    |   \---__pycache__
-    |           controller_helper.cpython-37.pyc
-    |           controller_helper.cpython-39.pyc
-    |           default_controller.cpython-37.pyc
-    |           default_controller.cpython-39.pyc
-    |           ranking_module.cpython-37.pyc
-    |           session_config.cpython-37.pyc
-    |           session_config.cpython-39.pyc
-    |           __init__.cpython-37.pyc
-    |           __init__.cpython-39.pyc
-    |
-    +---models
-    |   |   authentication_request.py
-    |   |   authentication_token.py
-    |   |   base_model_.py
-    |   |   enumerate_offset.py
-    |   |   error.py
-    |   |   package.py
-    |   |   package_data.py
-    |   |   package_history_entry.py
-    |   |   package_id.py
-    |   |   package_metadata.py
-    |   |   package_name.py
-    |   |   package_query.py
-    |   |   package_rating.py
-    |   |   semver_range.py
-    |   |   user.py
-    |   |   user_authentication_info.py
-    |   |   __init__.py
-    |   |
-    |   \---__pycache__
-    |           authentication_request.cpython-37.pyc
-    |           authentication_request.cpython-39.pyc
-    |           authentication_token.cpython-37.pyc
-    |           authentication_token.cpython-39.pyc
-    |           base_model_.cpython-37.pyc
-    |           base_model_.cpython-39.pyc
-    |           enumerate_offset.cpython-37.pyc
-    |           enumerate_offset.cpython-39.pyc
-    |           error.cpython-37.pyc
-    |           error.cpython-39.pyc
-    |           package.cpython-37.pyc
-    |           package.cpython-39.pyc
-    |           package_data.cpython-37.pyc
-    |           package_data.cpython-39.pyc
-    |           package_history_entry.cpython-37.pyc
-    |           package_history_entry.cpython-39.pyc
-    |           package_id.cpython-37.pyc
-    |           package_id.cpython-39.pyc
-    |           package_metadata.cpython-37.pyc
-    |           package_metadata.cpython-39.pyc
-    |           package_name.cpython-37.pyc
-    |           package_name.cpython-39.pyc
-    |           package_query.cpython-37.pyc
-    |           package_query.cpython-39.pyc
-    |           package_rating.cpython-37.pyc
-    |           package_rating.cpython-39.pyc
-    |           semver_range.cpython-37.pyc
-    |           semver_range.cpython-39.pyc
-    |           user.cpython-37.pyc
-    |           user.cpython-39.pyc
-    |           user_authentication_info.cpython-37.pyc
-    |           user_authentication_info.cpython-39.pyc
-    |           __init__.cpython-37.pyc
-    |           __init__.cpython-39.pyc
-    |
-    +---test
-    |   |   test_default_controller.py
-    |   |   __init__.py
-    |   |
-    |   \---__pycache__
-    |           __init__.cpython-39.pyc
-    |
-    \---__pycache__
-            encoder.cpython-37.pyc
-            type_util.cpython-37.pyc
-            type_util.cpython-39.pyc
-            util.cpython-37.pyc
-            util.cpython-39.pyc
-            __init__.cpython-37.pyc
-            __init__.cpython-39.pyc
-            __main__.cpython-37.pyc
-            __main__.cpython-39.pyc
-
-The files for the project outside the server and frontend directories are:
-
-    |   .env
-    |   .gcloudignore
-    |   API tests
-    |   app.yaml
-    |   correctapi.yaml
-    |   docs.py
-    |   express-master.zip
-    |   main.py
-    |   react-main.zip
-    |   README.md
-    |   requirements.txt
-    |   test.py
-    |   test_suite.py
-    
- 
 Trustworthy Modules Registry by Group 19.
