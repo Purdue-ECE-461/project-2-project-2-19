@@ -36,6 +36,20 @@ def child_dirs(path):
      return dirs
  
 
+import re
+
+
+def is_possible_row(row):
+    if (row[0] == "^" or row[0] == "<" or row[0] == ">" or row[:1] == ">=" or row[0] == "<="):
+        return False
+
+    #https://stackoverflow.com/questions/55597012/regex-pattern-to-match-valid-version-numbers
+    if re.compile(r'^\d+(\.)\d+(\.)\d+').match(row) != None:
+            return True
+
+    if re.compile(r'~\d+(\.)\d+').match(row) != None:
+            return True
+        
 def get_pin_value(data):
     '''
         Code Ninja Data lol
@@ -56,15 +70,14 @@ def get_pin_value(data):
     
     num_exact = 0
     for (key) in dict_deps:
-        if ('-' in dict_deps[key] or '^' in dict_deps[key]):
-            continue
-        else:
+        if(is_possible_row(dict_deps[key])):
             num_exact += 1
 
     print ("Found {} pinned dependancies".format(num_exact))
     if (num_exact == 0):
         num_exact = 1
-    return (1 / num_exact)
+        
+    return (float(num_exact / len(dict_deps)))
 
 def get_package_json(temp_location_of_zip):
     '''
