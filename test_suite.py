@@ -356,7 +356,7 @@ def post_random_packages(number):
     encoded = base64.b64encode(data)
     s_encoded = '"' + str(encoded) + '"'
     
-    s_num = '"' + str(number) + '"'
+    s_num = str(number)
     
     requestBody = {
       "metadata": {
@@ -397,8 +397,26 @@ def get_some_pages():
 
 def get_some_pages_with_offset():
     print ("\n Testing offset... first adding 15 random projects.")
-    for i in range(0, 15):
-        post_random_packages(i + 3)
+    for i in range(0, 19):
+        print ("\n\t@ Package {}".format(i))
+        post_random_packages(str(i + 3))
+    
+    requestUrl = "https://purde-final-project.appspot.com/packages?offset=2"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.post(requestUrl, headers=requestHeaders)
+    a = json.loads(request.content)
+    
+    requestUrl = "https://purde-final-project.appspot.com/packages?offset=1"
+    
+    request_2 = requests.post(requestUrl, headers=requestHeaders)
+    
+    b = json.loads(request_2.content)
+
+    assert (a != b)            
+        
 
 if __name__ == "__main__":
   print ("\nRunning Auth tests..")  

@@ -43,8 +43,6 @@ def package_create(body=None, x_authorization=None):  # noqa:
 
     if connexion.request.is_json:
          body = Package.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-         x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
     if (body.data.content != ""):
         response = controller_helper.convert_and_upload_zip(body.data.content, 
@@ -89,7 +87,7 @@ def package_retrieve(id=None, x_authorization=None):  # noqa: E501
 
 
 @app.route("/package/<id>", methods=["PUT"])
-def package_update(id, body=None, x_authorization=None):  # noqa: E501
+def package_update(id=None, body=None, x_authorization=None):  # noqa: E501
     """Update this version of the package.
 
     The name, version, and ID must match.  The package contents (from PackageData) will replace the previous contents. # noqa: E501
@@ -104,19 +102,14 @@ def package_update(id, body=None, x_authorization=None):  # noqa: E501
     :rtype: None
     """
     if connexion.request.is_json:
-        body = Package.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    
+        body = Package.from_dict(connexion.request.get_json())  # noqa: E501    
     
     
     ret = controller_helper.update_package_by_id(body.data.content,
-                                              id,
+                                              body.metadata.id,
                                               body.metadata.name,
                                               body.metadata.version)
-    return ret 
+    return ret[0], ret[1]
 
 
 
@@ -135,8 +128,6 @@ def package_delete(id, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
     
     
     ret = controller_helper.delete_package_by_id(id)
@@ -157,8 +148,6 @@ def package_rate(id=None, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
     ret = controller_helper.get_rating_by_id(id)
 
@@ -180,8 +169,6 @@ def package_by_name_get(name, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
     
     ret = controller_helper.get_packages_by_name(name)
     return ret
@@ -202,9 +189,6 @@ def package_by_name_delete(name, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         name = PackageName.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    
     
     ret = controller_helper.delete_package_by_name(name)
     return ret
@@ -213,10 +197,14 @@ def package_by_name_delete(name, x_authorization=None):  # noqa: E501
 @app.route("/packages", methods=["POST"])
 def packages_list():
     offset = 1
-    if connexion.request.is_json:
-        body = [PackageQuery.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
-    if connexion.request.is_json:
-        offset = EnumerateOffset.from_dict(connexion.request.get_json())  # noqa: E501
+    try:
+        offset = (connexion.request.args.get("offset"))  # noqa: E501
+    except:
+        pass
+
+    if (offset == None):
+        offset = 0
+    print (offset)
     ret = controller_helper.paginate(int(offset))
     
     print ("HERE IS IT IN THE FNAL RETURN")
@@ -236,7 +224,6 @@ def registry_reset(x_authorization=None):  # noqa: E501
     :rtype: None
     """
     controller_helper.tear_down()
-    print ("HEYYLOO")
     return 'Registry is reset.', 200
 
 

@@ -14,6 +14,7 @@ from Project2 import macros
 import os
 from flask import render_template, flash, request
 from google.cloud import storage
+import requests 
 
 @app.route("/")
 @app.route("/home")
@@ -34,7 +35,7 @@ def upload():
     Code borrowed from google-docs.
         https://cloud.google.com/appengine/docs/flexible/python/using-cloud-storage
     '''
-    if request.method == 'POST':
+    if request.method ==  "POST":
                 
         f = request.files['file']
         
@@ -42,55 +43,48 @@ def upload():
             return 'No file uploaded.', 400
         
         name = request.form.get('name')
-        
+
         if not name:
             return 'No Name mentioned', 400
-        
-        version = request.form.get("version")
+
+        version = request.form.get('version')
         
         if not version:
             return 'No Version mentioned', 400
         
         
         # Lazy-load the libraries.
-        import requests
-        from requests.structures import CaseInsensitiveDict
         import base64
         
         data = f.read()
-        encoded_data = base64.b64encode(data)
+        requestUrl = "https://purde-final-project.appspot.com/package"
         
-        url = "https://purde-final-project.appspot.com/package"
+        encoded = base64.b64encode(data)
+        s_encoded = '"' + str(encoded) + '"'
         
-        headers = CaseInsensitiveDict()
-        headers["X_Authorization"] = "fdsfdsfds"
-        headers["Content-Type"] = "application/json"
-        
-        s_name = '"' + name + '"'
-        s_version = '"' + version + '"'
-        s_content = '"' + str(encoded_data) + '"'
-        
-        data = """
-        {
-          "data": {
-            "Content": %s,
-            "JSProgram": "JSProgram",
-            "URL": "URL"
-          },
+        requestBody = {
           "metadata": {
-            "ID": "ID",
-            "Name": %s,
-            "Version": %s
+            "Name": name,
+            "Version": version,
+            "ID": "69"
+          },
+          "data": {
+            "Content": s_encoded,
+            "JSProgram": "",
+            "URL": ""
           }
         }
-        """ % (s_content, s_name, s_version)
-                        
-        resp = requests.post(url, headers=headers, data=data)
+        requestHeaders = {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
         
-        print(resp.status_code)
+        r = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
         
-        if (resp.status_code == 200):
+        if (r.status_code == 200):
             flash("File added to the Cloud.")
+    else:
+        print ("wtf")
         
     return render_template("index.html", title="docs page")
 
@@ -98,22 +92,18 @@ def upload():
 def about():
     return render_template("about.html")
 
-import json
 
 @app.route("/view")
 def view():
     import requests
 
-    headers = {
-        'X_Authorization': 'fsafsa',
+    requestUrl = "https://purde-final-project.appspot.com/packages"
+    requestHeaders = {
+      "Accept": "application/json"
     }
     
-    params = (
-        ('offset', '1'),
-    )
-    
-    response = requests.post('https://purde-final-project.appspot.com/packages', headers=headers, params=params)
-    
+    response = requests.post(requestUrl, headers=requestHeaders)
+
     names_array = []
     id_array = []
     size_array = []

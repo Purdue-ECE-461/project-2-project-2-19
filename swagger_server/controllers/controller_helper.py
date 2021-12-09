@@ -381,9 +381,9 @@ def replace_project_data(project, content):
 
     display_sql()
     
-    return ('Success')
+    return ('Success.', 200)
 
-def update_package_by_id(content, id, name, version):
+def update_package_by_id(content, uid, name, version):
     '''
     Content: what we're replacing
     ID, Name, version: what we're replacing to.
@@ -394,10 +394,10 @@ def update_package_by_id(content, id, name, version):
     
     # ID is unique so yeah
     desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.id == id).first()
+                        filter(session_config.Projects.id == uid).first()
 
     if desired_project is None:
-        return 400
+        return 'Malformed request.', 400
 
     # desired_project is what we're replacing.
     
@@ -515,7 +515,10 @@ def paginate(page_offset):
     gcs = storage.Client()
     bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
     
-    desired_targets = list(bucket.list_blobs())[(page_offset - 1) * 30: page_offset * 30]    
+    desired_targets = list(bucket.list_blobs())[(page_offset - 1) * 10: page_offset * 10]   
+    
+    if (page_offset == 0):
+        desired_targets = list(bucket.list_blobs())
 
     ret = []
     
