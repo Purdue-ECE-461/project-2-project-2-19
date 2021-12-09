@@ -65,4 +65,6 @@ a public repository.
 
 <h1>Tests</h1>
 Use the following command to run our test suite:
+
+python test_suite.py
     
