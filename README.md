@@ -8,7 +8,7 @@
 | SQL server          | PSource code for setting up the Backend of the registry               | swagger_server/ |
 | Main app files          | code for main.py, configuration files, test files.       | / |
 
-<h1>Features and Usage</h1>
+<h1>Features</h1>
 <br>
 This project is a NPM-registry with authentication. <br>
 
@@ -37,10 +37,32 @@ DELETE requests:
 
 The registry uses Google App Engine, Google Compute Engine, and a MySQL Database while exposing a single api instance to users. 
 
-The webpage is ADA compliant as verified by Microsofts automated accessibility checks. 
-
-The link to access the registry is:
-
-    https://purde-final-project.appspot.com 
+The webpage is ADA compliant as verified by Microsofts automated accessibility checks.  
 
 Trustworthy Modules Registry by Group 19.
+
+<h1>Access to registry</h1>
+The link to access the registry is:
+
+    https://purde-final-project.appspot.com
+    
+<h1>Website guide</h1>
+Use the link given above to access an instance of and send requests to our registry through our API. 
+
+
+The webpage also has a view tab to view packages currently stored in the registry,
+along with an endpoints tab to provide information for requests to the API.
+
+These pages can be accessed by adding the following path relative to the home link given above:
+    
+    View: /view
+    Endpoints: /ui1
+
+The packages should be zipped before uploading. 
+
+When using requests to upload/create a package, ensure that the content field is encoded in base64/the URL points to 
+a public repository. 
+
+<h1>Tests</h1>
+Use the following command to run our test suite:
+    
