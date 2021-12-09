@@ -24,6 +24,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install bandit
+    - name: ckout
+      run: actions/checkout
+      
     - name: Security check - Bandit
       uses: ./
       with:
