@@ -37,7 +37,7 @@ DELETE requests:
 
 The registry uses Google App Engine, Google Compute Engine, and a MySQL Database while exposing a single api instance to users. 
 
-The webpage is ADA compliant as verified by Microsofts automated accessibility checks.  
+The webpage is ADA compliant as verified by axeDev automated accessibility checks.  
 
 Trustworthy Modules Registry by Group 19.
 
