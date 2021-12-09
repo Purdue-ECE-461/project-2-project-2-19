@@ -79,7 +79,7 @@ def test_post_package_1():
   
   data = open ("react-main.zip", "rb").read()
   encoded = base64.b64encode(data)
-  s_encoded = '"' + str(encoded) + '"'
+  s_encoded = str(encoded)[2:]
   
   requestBody = {
     "metadata": {
@@ -115,7 +115,7 @@ def test_post_package_2():
   
   data = open ("react-main.zip", "rb").read()
   encoded = base64.b64encode(data)
-  s_encoded = '"' + str(encoded) + '"'
+  s_encoded = str(encoded)[2:]
   
   requestBody = {
     "metadata": {
@@ -152,7 +152,7 @@ def test_post_package_user_id():
 
     data = open ("react-main.zip", "rb").read()
     encoded = base64.b64encode(data)
-    s_encoded = '"' + str(encoded) + '"'
+    s_encoded = str(encoded)[2:]
     
     requestBody = {
       "metadata": {
@@ -261,7 +261,64 @@ def test_get_by_name_true():
     request = requests.get(requestUrl, headers=requestHeaders)
 
     assert (request.status_code == 200)
-    assert (json.loads(request.content)[0]["name"] == "shrek lol")   
+    assert (json.loads(request.content)[0]["name"] == "shrek lol")
+    
+
+def test_put_no_package():
+      data = open ("express-master.zip", "rb").read()
+      print ("Testing update on package that doesnt exist")
+      encoded = base64.b64encode(data)
+      s_encoded = str(encoded)[2:]
+        
+      requestUrl = "https://purde-final-project.appspot.com/package/1"
+      requestBody = {
+        "metadata": {
+          "Name": 255,
+          "Version": 9,
+          "ID": 699010020520535
+        },
+        "data": {
+          "Content": s_encoded,
+          "JSProgram": "",
+          "URL": ""
+        }
+      }
+      requestHeaders = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    
+      request = requests.put(requestUrl, headers=requestHeaders, json=requestBody)
+      
+      assert (request.status_code == 400)
+
+def test_put_yes_package():
+      data = open ("express-master.zip", "rb").read()
+      print ("Testing update on package that does exist")
+      encoded = base64.b64encode(data)
+      s_encoded = str(encoded)[2:]
+        
+      requestUrl = "https://purde-final-project.appspot.com/package/1"
+      requestBody = {
+        "metadata": {
+          "Name": 255,
+          "Version": 9,
+          "ID": 9
+        },
+        "data": {
+          "Content": s_encoded,
+          "JSProgram": "",
+          "URL": ""
+        }
+      }
+      requestHeaders = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    
+      request = requests.put(requestUrl, headers=requestHeaders, json=requestBody)
+      
+      assert (request.status_code == 200)
     
 
 def test_get_by_name_more_versions():
@@ -270,7 +327,7 @@ def test_get_by_name_more_versions():
     
     data = open ("react-main.zip", "rb").read()
     encoded = base64.b64encode(data)
-    s_encoded = '"' + str(encoded) + '"'
+    s_encoded = str(encoded)[2:]
     
     requestBody = {
       "metadata": {
@@ -354,7 +411,7 @@ def post_random_packages(number):
     
     data = open ("react-main.zip", "rb").read()
     encoded = base64.b64encode(data)
-    s_encoded = '"' + str(encoded) + '"'
+    s_encoded = str(encoded)[2:]
     
     s_num = str(number)
     
@@ -439,6 +496,10 @@ if __name__ == "__main__":
   
   test_package_delete_false()
   test_package_delete_true()
+  
+  
+  test_put_no_package()
+  test_put_yes_package()
   
     # GET /package/byName/{name}
   test_get_by_name_false()

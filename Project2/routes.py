@@ -60,7 +60,7 @@ def upload():
         requestUrl = "https://purde-final-project.appspot.com/package"
         
         encoded = base64.b64encode(data)
-        s_encoded = '"' + str(encoded) + '"'
+        s_encoded = str(encoded)[2:]
         
         requestBody = {
           "metadata": {
@@ -81,7 +81,7 @@ def upload():
         
         r = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
         
-        if (r.status_code == 200):
+        if (r.status_code == 201):
             flash("File added to the Cloud.")
     else:
         print ("wtf")
