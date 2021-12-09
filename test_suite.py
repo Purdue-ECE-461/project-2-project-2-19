@@ -334,6 +334,71 @@ def test_delete_by_name_singular():
     request = requests.delete(requestUrl, headers=requestHeaders)
 
     assert (request.status_code == 200)
+    
+    
+def get_pages_empty():
+    print ("\n Testing empty pages..")
+    requestUrl = "https://purde-final-project.appspot.com/packages"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.post(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 200)
+    assert (["No such page exists"] == json.loads(request.content))
+
+
+def post_random_packages(number):
+    requestUrl = "https://purde-final-project.appspot.com/package"
+    
+    data = open ("react-main.zip", "rb").read()
+    encoded = base64.b64encode(data)
+    s_encoded = '"' + str(encoded) + '"'
+    
+    s_num = '"' + str(number) + '"'
+    
+    requestBody = {
+      "metadata": {
+        "Name": s_num,
+        "Version": s_num,
+        "ID": number
+      },
+      "data": {
+        "Content": s_encoded,
+        "JSProgram": "",
+        "URL": ""
+      }
+    }
+    requestHeaders = {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+    
+    _ = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+
+    
+def get_some_pages():
+    print ("\n Testing full pages... [Adding 2 random packages]")
+
+    post_random_packages("1")
+    post_random_packages("2")
+
+    requestUrl = "https://purde-final-project.appspot.com/packages"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.post(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 200)
+    assert (["No such page exists"] != json.loads(request.content))
+
+
+def get_some_pages_with_offset():
+    print ("\n Testing offset... first adding 15 random projects.")
+    for i in range(0, 15):
+        post_random_packages(i + 3)
 
 if __name__ == "__main__":
   print ("\nRunning Auth tests..")  
@@ -366,3 +431,8 @@ if __name__ == "__main__":
   test_delete_by_name_false()
   test_delete_by_name_true_all_versions()
   test_delete_by_name_singular()
+  
+      #POST /packages
+  get_pages_empty()
+  get_some_pages()
+  get_some_pages_with_offset()
