@@ -1,0 +1,8 @@
+WARNING:Checking logging warnings
+WARNING:Checking logging warnings
+INFO:Checking logging info
+DEBUG:Checking logging debugs
+WARNING:Checking logging warnings
+INFO:Checking logging info
+WARNING:Checking logging warnings
+WARNING:Checking logging warnings

@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+# This file is the executable that will be the basis for our project
+
+import argparse
+import logging
+import os
+import sys
+import os.path
+
+def testFunc():
+    print("testing!")
+    param = 'tests/test_final.txt'
+    os.system(f'python3 get-metadata.py {param}')
+
+def installFunc():
+    print("Installing!")
+    os.system('pip3 install --user -r requirements.txt')
+    
+def fileFunc(param):
+    print("filePathing!")
+    os.system(f'python3 get-metadata.py {param}')
+
+def envCheckFunc():
+    if "GITHUB_TOKEN" in os.environ:
+        logging.info("'GITHUB_TOKEN' is in os.environ")
+        logging.debug("GITHUB_TOKEN=",os.environ.get("GITHUB_TOKEN"))
+        #pass
+    else:
+        print("'GITHUB_TOKEN' is NOT in os.environ. Exiting")
+        logging.info("'GITHUB_TOKEN' is NOT in os.environ. Exiting")
+        sys.exit(1)
+        #raise LookupError("Github Token not found in env.")
+    if "LOG_FILE" in os.environ:
+        logging.info("'LOG_FILE' is in os.environ")
+        logging.debug("LOG_FILE=",os.environ.get("LOG_FILE"))
+        #pass
+    else:
+        print("'LOG_FILE' is NOT in os.environ. Exiting")
+        logging.info("'LOG_FILE' is NOT in os.environ. Exiting")
+        sys.exit(1)
+        #raise LookupError("Log File not found in env.")
+
+def logSetUp():
+    log_level = 0
+    if "LOG_LEVEL" in os.environ:
+        logging.info("'LOG_LEVEL' is in os.environ")
+        logging.debug("LOG_LEVEL=",os.environ.get("LOG_LEVEL"))
+        log_level = int(os.environ.get("LOG_LEVEL"))
+        #pass
+    else:
+        logging.info("'LOG_LEVEL' is NOT in os.environ")
+        #sys.exit(1)
+        #raise LookupError("Log File not found in env.")
+
+    if not os.path.exists(os.environ.get("LOG_FILE")):
+        with open(os.path.basename(os.environ.get("LOG_FILE")), mode='w'):
+            pass
+    
+    if log_level == 1:
+        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.INFO)
+    elif log_level == 2:
+        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    else:
+        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.WARNING)
+    # NOTE: Only use logging.info and logging.debug, as logging.warning and ABOVE are considered the "silent" logging for this project
+
+def main():
+    envCheckFunc()
+    logSetUp()
+    #logging.info("Checking logging info")
+    #logging.debug("Checking logging debugs")
+    #logging.warning("Checking logging warnings")
+    
+    myParser = argparse.ArgumentParser(description="This 'run' executable runs Team 19's Module Evaluator for project 1.")
+    myParser.add_argument("command",help="Command for Module Evaluator: Should be 'install', 'test' or '<filepath>'.\n <filepath> is the absolute path of a file that contains a list of URLs delimited by newline.")
+    args = myParser.parse_args()
+    logging.info("Command used: ", args.command)
+    
+    # Check the input after "./run"
+    if args.command == "install":
+        installFunc()
+    elif args.command == "test":
+        testFunc()
+    else:
+        # Check if the input is a valid file
+        try:
+            with open(args.command):
+                fileFunc(args.command)
+        except FileNotFoundError:
+            print("Invalid input. Reference: './run -h'")
+            logging.info("Invalid input. Reference: './run -h'")
+    
+    pass # replace this with our actual file opening/passing of URL list
+    
+    # print("We went too far")
+    #print(os.path)
+    sys.exit(0)
+      
+# Main function portability for scripting vs running this .py file    
+if __name__ == "__main__":
+    main()
+
+
