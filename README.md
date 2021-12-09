@@ -4,8 +4,8 @@
 
 | Item | Description | Location |
 |------|-------------|----------|
-| ADA compatible frontend | Source code for the ADA compliant website for the NPM registry       | Project2/ |
-| SQL server          | PSource code for setting up the Backend of the registry               | swagger_server/ |
+| ADA compatible frontend | Source code for the ADA compliant website for the NPM registry and a API-routes calling the server.       | Project2/ |
+| SQL server          | Source code for setting up the Backend of the registry; Check controller/ for core-logic.             | swagger_server/ |
 | Main app files          | code for main.py, configuration files, test files.       | / |
 
 <h1>Features</h1>
