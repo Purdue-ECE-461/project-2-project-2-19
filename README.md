@@ -37,4 +37,5 @@ The webpage is ADA compliant as verified by Microsofts automated accessibility c
 The link to access the registry is:
 
     https://purde-final-project.appspot.com 
-Group 19.
+    
+Trustworthy Modules Registry by Group 19.
