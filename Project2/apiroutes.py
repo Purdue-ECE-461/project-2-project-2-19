@@ -35,8 +35,6 @@ import connexion
 
 @app.route("/authenticate", methods=['PUT'])
 def create_auth_token():
-    if connexion.request.is_json:
-        body = AuthenticationRequest.from_dict(connexion.request.get_json())  # noqa: E501
     return 'This system does not support authentication.', 501
 
 
@@ -48,14 +46,24 @@ def package_create(body=None, x_authorization=None):  # noqa:
     if connexion.request.is_json:
          x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
 
-    response = controller_helper.convert_and_upload_zip(body.data.content, 
+    if (body.data.content != ""):
+        response = controller_helper.convert_and_upload_zip(body.data.content, 
                                                                 body.metadata.name,
                                                                 body.metadata.version,
                                                                 body.metadata.id)
+    if (body.data.url != "") :
+        response = controller_helper.upload_url(body.data.url,
+                                                    body.metadata.name,
+                                                    body.metadata.version,
+                                                    body.metadata.id)
     
     print (response)
     print (response[1])
-    return response[1]
+    
+    if (isinstance(response[1], int)):
+        return response[0], response[1]
+    
+    return response[1], 201
 
 
 
@@ -74,12 +82,10 @@ def package_retrieve(id=None, x_authorization=None):  # noqa: E501
     """
     if connexion.request.is_json:
         id = PackageID.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
     
     
     ret = controller_helper.get_package_by_id(id)
-    return ret
+    return ret[0], ret[1]
 
 
 @app.route("/package/<id>", methods=["PUT"])
@@ -229,10 +235,8 @@ def registry_reset(x_authorization=None):  # noqa: E501
 
     :rtype: None
     """
-    if connexion.request.is_json:
-        x_authorization = AuthenticationToken.from_dict(connexion.request.get_json())  # noqa: E501
-    
     controller_helper.tear_down()
+    print ("HEYYLOO")
     return 'Registry is reset.', 200
 
 
@@ -241,5 +245,4 @@ def add_user(x_auth=None):
     if connexion.request.is_json:
         body = (connexion.request.get_json())  # noqa: E501
     
-    print (body)
-    return body
+    return body["metadata"]

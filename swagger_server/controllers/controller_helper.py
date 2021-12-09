@@ -106,8 +106,9 @@ def display_sql():
     print (session.query(session_config.Metrics).all())    
     print ("\n====================\n\n")
     
-def add_project_db(name, version):
+def add_project_db(name, version, user_id):
     print (name, version)
+    
     
     project = session.query(session_config.Projects).filter(session_config.Projects.version == version).\
                                                     filter(session_config.Projects.name == name).first()
@@ -117,10 +118,18 @@ def add_project_db(name, version):
     if not project:
         try:
             print ("adding new project")
-            new_project = session_config.Projects(
-                        name = name,
-                        version = version
-                )
+            print (user_id)
+            print ((session.query(session_config.Projects).filter(session_config.Projects.id == user_id)).first())
+            if (session.query(session_config.Projects).filter(session_config.Projects.id == user_id).first()):
+                new_project = session_config.Projects(
+                            name = name,
+                            version = version)
+            else:
+                new_project = session_config.Projects(
+                            name = name,
+                            version = version,
+                            id = user_id)            
+            
             session.add(new_project)
             session.commit()
             
@@ -187,10 +196,13 @@ def convert_and_upload_zip(byteStream, name, version, uid):
 
   #  tear_down()
     print ("HEY")
-    response_code = add_project_db(name, version)
+    response_code = add_project_db(name, version, uid)
     
-    if (response_code != 200):
-        return 'Server Error.', 500
+    if (response_code == 404):
+        return 'Malformed request.', 400
+    
+    if (response_code == 403):
+        return 'Package exists already.', 403
     
     temp_location = '/tmp/output_file.zip'
 
@@ -204,7 +216,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     print ("YES")
     
     if not f:
-        return 'No file uploaded.', 400
+        return 'Malformed request.', 400
     
     # Get the JSON file inside this dir.
     repo_url_for_github = None
@@ -236,7 +248,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
         session.commit()
         
         print ("Ingestion failed.")
-        return 'Ingestion Failed.', 400
+        return 'Malformed Request - Ingestion Failed.', 400
     
     print ("\n Ingestion Success.. \n")
     
@@ -281,6 +293,9 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
+
+def upload_url(url, name, version, user_id):
+    pass
 
 def replace_project_data(project, content):
     '''
@@ -438,7 +453,7 @@ def get_package_by_id(id):
     desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
 
     if desired_project is None:
-        return 400
+        return 'No Such Package', 400
 
     meta_data = {}
     meta_data['ID'] = id
@@ -446,7 +461,7 @@ def get_package_by_id(id):
     meta_data['Version'] = desired_project.version
 
 
-    return meta_data
+    return meta_data, 200
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
@@ -526,6 +541,13 @@ def paginate(page_offset):
         ret = ['No such page exists']
     
     return json.dumps(ret)
+
+
+def make_user(username, passkey):
+    '''
+    '''
+    
+    return
 
 def delete_package_by_id(id):
     '''
