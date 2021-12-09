@@ -22,8 +22,8 @@ PUT requests:
 2. Create auth token for a default user with the following credentials:
 
 
-    Username: ece461defaultadmin<br>
-    Password: correcthorsebatterystaple123(!__+@**(A
+        Username: ece461defaultadmin<br>
+        Password: correcthorsebatterystaple123(!__+@**(A
 
 DELETE requests:
 1. Deleting a particular version of a package
