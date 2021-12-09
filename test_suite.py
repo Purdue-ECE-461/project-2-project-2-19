@@ -303,7 +303,7 @@ def test_put_yes_package():
         "metadata": {
           "Name": 255,
           "Version": 9,
-          "ID": 9
+          "ID": 69696969
         },
         "data": {
           "Content": s_encoded,
