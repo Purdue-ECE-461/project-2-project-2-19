@@ -298,13 +298,49 @@ def test_get_by_name_more_versions():
     request = requests.get(requestUrl, headers=requestHeaders)
 
     assert (request.status_code == 200)
-    print (request.content)    
+    print (request.content)
+    
+
+def test_delete_by_name_false():
+    print ("Delete by name false package")
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/something fake"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.delete(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 400)
+
+
+def test_delete_by_name_true_all_versions():
+    print ("Delete by name all version for this package")
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/shrek%20lol"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.delete(requestUrl, headers=requestHeaders)
+
+    assert (request.status_code == 200)
+
+def test_delete_by_name_singular():
+    print ("Delete by name real package")
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/shrek23"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.delete(requestUrl, headers=requestHeaders)
+
+    assert (request.status_code == 200)
 
 if __name__ == "__main__":
   print ("\nRunning Auth tests..")  
   test_auth_none_user()
   test_auth_exist_user()
   
+  test_reset()
   test_reset()
   test_reset()
   
@@ -327,3 +363,6 @@ if __name__ == "__main__":
   test_get_by_name_more_versions()
   
       #DELETE /package/byName/{name}
+  test_delete_by_name_false()
+  test_delete_by_name_true_all_versions()
+  test_delete_by_name_singular()
