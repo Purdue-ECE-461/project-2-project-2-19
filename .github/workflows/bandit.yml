@@ -1,6 +1,11 @@
 name: Security check - Bandit
 
-on: [push]
+on: 
+  push:
+    branches: [ garvit-branch ]
+  
+  workflow_dispatch:
+  
 
 jobs:
   build:
