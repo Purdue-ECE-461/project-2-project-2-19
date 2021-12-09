@@ -8,6 +8,7 @@
 | SQL server          | PSource code for setting up the Backend of the registry               | swagger_server/ |
 | Main app files          | code for main.py, configuration files, test files.       | / |
 
+<h1>Features and Usage</h1>
 <br>
 This project is a NPM-registry with authentication. <br>
 
