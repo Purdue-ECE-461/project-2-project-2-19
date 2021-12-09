@@ -104,7 +104,8 @@ def test_post_package_1():
       # This request is a duplicate. to ensure the existing package.
   request_exist = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
 
-  
+  print (request_exist.content)
+  print (request_exist.status_code)
   print ("\nPost works with existing package.")
   assert(request_exist.status_code == 403)
 
@@ -137,6 +138,8 @@ def test_post_package_2():
  
 
   print ("\nPost works with new package.")
+  print (request.content)
+  print (request.status_code)
  # print (request.status_code)
   assert(request.status_code == 201)
 
@@ -211,11 +214,98 @@ def test_get_package_true():
 
   assert (request.status_code == 200)    
 
+
+
+def test_package_delete_false():
+    print ("Testing delete on false project...")
+    requestUrl = "https://purde-final-project.appspot.com/package/66"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.delete(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 400)
+    
+
+def test_package_delete_true():
+    print ("Testing delete on true project...")
+    requestUrl = "https://purde-final-project.appspot.com/package/69"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.delete(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 200)
+    
+
+def test_get_by_name_false():
+    print ("Get by name false package")
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/something fake"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.get(requestUrl, headers=requestHeaders)
+    
+    assert (request.status_code == 400)
+    
+def test_get_by_name_true():
+    print ("Get by name real package")
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/shrek%20lol"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.get(requestUrl, headers=requestHeaders)
+
+    assert (request.status_code == 200)
+    assert (json.loads(request.content)[0]["name"] == "shrek lol")   
+    
+
+def test_get_by_name_more_versions():
+    print ("\n Testing get by name by adding a new version for a package")
+    requestUrl = "https://purde-final-project.appspot.com/package"
+    
+    data = open ("react-main.zip", "rb").read()
+    encoded = base64.b64encode(data)
+    s_encoded = '"' + str(encoded) + '"'
+    
+    requestBody = {
+      "metadata": {
+        "Name": "shrek lol",
+        "Version": "1.2.4",
+        "ID": "69"
+      },
+      "data": {
+        "Content": s_encoded,
+        "JSProgram": "",
+        "URL": ""
+      }
+    }
+    requestHeaders = {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+    
+    _ = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+    requestUrl = "https://purde-final-project.appspot.com/package/byName/shrek%20lol"
+    requestHeaders = {
+      "Accept": "application/json"
+    }
+    
+    request = requests.get(requestUrl, headers=requestHeaders)
+
+    assert (request.status_code == 200)
+    print (request.content)    
+
 if __name__ == "__main__":
   print ("\nRunning Auth tests..")  
   test_auth_none_user()
   test_auth_exist_user()
   
+  test_reset()
   test_reset()
   
   # post package but first reset so I can actually test shit
@@ -228,3 +318,12 @@ if __name__ == "__main__":
   test_get_package_true()
   
   
+  test_package_delete_false()
+  test_package_delete_true()
+  
+    # GET /package/byName/{name}
+  test_get_by_name_false()
+  test_get_by_name_true()
+  test_get_by_name_more_versions()
+  
+      #DELETE /package/byName/{name}
