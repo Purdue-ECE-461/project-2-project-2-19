@@ -37,7 +37,7 @@ DELETE requests:
 
 The registry uses Google App Engine, Google Compute Engine, and a MySQL Database while exposing a single api instance to users. 
 
-The webpage is ADA compliant as verified by Microsofts automated accessibility checks.  
+The webpage is ADA compliant as verified by axeDev automated accessibility checks.  
 
 Trustworthy Modules Registry by Group 19.
 
@@ -67,4 +67,5 @@ a public repository.
 Use the following command to run our test suite:
 
 python test_suite.py
-    
+
+If the suite fails, consider running pip install -r requirements.txt or activating the venv p2env.
