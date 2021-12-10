@@ -491,13 +491,35 @@ def get_package_by_id(uid):
     if desired_project is None:
         return 'No Such Package', 400
 
+    # Set content in data field. return the entire object.
+    data = {}
+    
+    t_id = desired_project.id
+    if (desired_project.custom_id != None):
+        t_id = desired_project.custom_id
+    
+    blob_name = "{}:{}.zip".format(desired_project.name, t_id)
+    
+    download_blob(macros.CLOUD_STORAGE_BUCKET, blob_name, "/tmp/download_tmp.zip")
+
+    with open("/tmp/download_tmp.zip", "rb") as f:
+        fbytes = f.read()
+        encoded = base64.b64encode(fbytes)
+        
+    data['Content'] = str(encoded)[2:]
+
     meta_data = {}
     meta_data['ID'] = uid
     meta_data['Name'] = desired_project.name
     meta_data['Version'] = desired_project.version
+    
+    
+    return_body = {}
+    return_body["metadata"] = meta_data
+    return_body["data"] = data
 
 
-    return meta_data, 200
+    return return_body, 200
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
@@ -631,3 +653,25 @@ def delete_package_by_id(uid):
 
     display_sql()    
     return 'Package is deleted.', 200
+
+
+
+
+
+
+
+
+
+
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    
+        # Stolen from the gcloud docs.
+            # JK borrowed.
+            # Without permission...
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
