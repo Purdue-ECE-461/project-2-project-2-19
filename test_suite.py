@@ -432,8 +432,8 @@ def post_random_packages(number):
       "Accept": "application/json"
     }
     
-    _ = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
-
+    r = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+    return r.status_code
     
 def get_some_pages():
     print ("\n Testing full pages... [Adding 2 random packages]")
@@ -472,10 +472,18 @@ def get_some_pages_with_offset():
     
     b = json.loads(request_2.content)
 
-    assert (a != b)            
-        
+    assert (a != b)
+
+
+def test_ece_461_failed_1():
+    print ("\n Testing ECE-461 failed case 1")
+    r = post_random_packages("underscore")     
+    assert (r == 201)
+
 
 if __name__ == "__main__":
+  test_ece_461_failed_1()
+    
   print ("\nRunning Auth tests..")  
   test_auth_none_user()
   test_auth_exist_user()
@@ -515,3 +523,5 @@ if __name__ == "__main__":
   get_pages_empty()
   get_some_pages()
   get_some_pages_with_offset()
+  
+  test_ece_461_failed_1()

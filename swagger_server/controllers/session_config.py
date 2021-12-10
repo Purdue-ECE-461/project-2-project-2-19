@@ -28,9 +28,11 @@ from sqlalchemy import Sequence
 # ------ ORMS ----------------
 class Projects(Base):
     __tablename__ = 'projects'
-    id = Column(Integer, primary_key = True, nullable = False, unique = True)
+    id = Column(Integer, primary_key = True, nullable = False, unique = True, autoincrement=True)
     name = Column(String(50), nullable = False, unique = False)
     version = Column(String(50), nullable = False, unique = False)
+    
+    custom_id = Column(String(50), primary_key = True, nullable = False, unique = True)
     
     # 1 row of metrics, forward link
     project_metrics = relationship("Metrics", back_populates="project_owner")    
@@ -147,7 +149,11 @@ def tear_session():
     session.query(Users).delete()
     session.commit()
     
-    
+def drop_it_like_its_HOT():
+    Base.metadata.drop_all(bind=pool, tables=[Metrics.__table__])
+    Base.metadata.drop_all(bind=pool, tables=[Users.__table__])
+    Base.metadata.drop_all(bind=pool, tables=[Projects.__table__])
+
 def make_table():
     db = pool.connect()
     Session = sessionmaker(bind=pool)

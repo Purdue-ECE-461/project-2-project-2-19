@@ -141,7 +141,7 @@ def add_project_db(name, version, user_id):
                 new_project = session_config.Projects(
                             name = name,
                             version = version,
-                            id = user_id)            
+                            custom_id = user_id)            
             
             session.add(new_project)
             session.commit()
@@ -406,8 +406,12 @@ def update_package_by_id(content, uid, name, version):
     '''
     
     # ID is unique so yeah
-    desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.id == uid).first()
+    if (isinstance(uid, str)):
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == uid).first()
+    else:    
+        desired_project = session.query(session_config.Projects).\
+                            filter(session_config.Projects.id == uid).first()
 
     if desired_project is None:
         return 'Malformed request.', 400
@@ -444,8 +448,14 @@ def get_packages_by_name(name):
     return json.dumps(meta_data)
 
 
-def get_rating_by_id(id):
-    desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
+def get_rating_by_id(uid):
+    
+    if (isinstance(uid, str)):
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == uid).first()
+    else:    
+        desired_project = session.query(session_config.Projects).\
+                            filter(session_config.Projects.id == uid).first()
     
     if (desired_project is None):
         return 'No such package.', 400
@@ -454,7 +464,7 @@ def get_rating_by_id(id):
     
     return metric_class.get_metrics()
 
-def get_package_by_id(id):
+def get_package_by_id(uid):
     '''
         Get a package by id
         Return the metadata for now
@@ -463,8 +473,12 @@ def get_package_by_id(id):
             id, of the project
     '''
     # ID is unique so yeah
-    desired_project = session.query(session_config.Projects).filter(session_config.Projects.id == id).first()
-
+    if (isinstance(uid, str)):
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == uid).first()
+    else:    
+        desired_project = session.query(session_config.Projects).\
+                            filter(session_config.Projects.id == uid).first()
     if desired_project is None:
         return 'No Such Package', 400
 
@@ -565,7 +579,7 @@ def make_user(username, passkey):
     
     return
 
-def delete_package_by_id(id):
+def delete_package_by_id(uid):
     '''
     Deletes only THIS version of the package.    
     
@@ -573,9 +587,15 @@ def delete_package_by_id(id):
     2. Delete from the bucket.
     '''
 
-    # ID is unique so yeah
-    desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.id == id).first()
+    # If the given ID is a varchar, check custom_id field.
+    # If not, use the typical auto INC ID field.
+    
+    if (isinstance(uid, str)):
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == uid).first()
+    else:    
+        desired_project = session.query(session_config.Projects).\
+                            filter(session_config.Projects.id == uid).first()
 
     if desired_project is None:
         return 'No such package.', 400

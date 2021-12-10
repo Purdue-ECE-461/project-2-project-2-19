@@ -42,18 +42,35 @@ def create_auth_token():
 def package_create(body=None, x_authorization=None):  # noqa: 
 
     if connexion.request.is_json:
-         body = Package.from_dict(connexion.request.get_json())  # noqa: E501
+            body = connexion.request.get_json()  # noqa: E501
+    try:
+        if (body == None):
+            print ("BODY NULL")
+            print (body)
+            return "Malformed Request.", 400
+    except:
+        return "Malformed Request.", 400
 
-    if (body.data.content != ""):
-        response = controller_helper.convert_and_upload_zip(body.data.content, 
-                                                                body.metadata.name,
-                                                                body.metadata.version,
-                                                                body.metadata.id)
-    if (body.data.url != "") :
-        response = controller_helper.upload_url(body.data.url,
-                                                    body.metadata.name,
-                                                    body.metadata.version,
-                                                    body.metadata.id)
+
+    print (body)
+    
+    if (body["data"]["content"] != ""):
+        response = controller_helper.convert_and_upload_zip(body["data"]["content"], 
+                                                                body["metadata"]["name"],
+                                                                body["metadata"]["version"],
+                                                                body["metadata"]["id"])
+    if (body["data"]["url"] != "") :
+        response = controller_helper.upload_url(body["data"]["url"],
+                                                    body["metadata"]["name"],
+                                                    body["metadata"]["version"],
+                                                    body["metadata"]["id"])
+    
+    
+    
+    if (response == None):
+        print ("RESPONSE IS NULL")
+        print (response)
+        return 'Unexpected Error', 500
     
     print (response)
     print (response[1])
