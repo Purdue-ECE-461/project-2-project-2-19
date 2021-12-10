@@ -58,13 +58,18 @@ def package_create(body=None, x_authorization=None):  # noqa:
                                                                 body["metadata"]["Name"],
                                                                 body["metadata"]["Version"],
                                                                 body["metadata"]["ID"])
+    else:
+        print ("BODY DATA NULL")
+        print (body["data"])
+        
     if (body["data"]["URL"] != "") :
         response = controller_helper.upload_url(body["data"]["URL"],
                                                     body["metadata"]["Name"],
                                                     body["metadata"]["Version"],
                                                     body["metadata"]["ID"])
-    
-    
+    else:
+        print ("BODY DATA NULL")
+        print (body["data"])
     
     if (response == None):
         print ("RESPONSE IS NULL")

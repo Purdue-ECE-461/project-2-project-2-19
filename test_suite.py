@@ -455,8 +455,8 @@ def get_some_pages():
 
 
 def get_some_pages_with_offset():
-    print ("\n Testing offset... first adding 15 random projects.")
-    for i in range(0, 19):
+    print ("\n Testing offset... first adding 7 random projects.")
+    for i in range(0, 7):
         print ("\n\t@ Package {}".format(i))
         post_random_packages(str(i + 3))
     
