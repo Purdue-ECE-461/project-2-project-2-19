@@ -316,12 +316,16 @@ def convert_and_upload_zip(byteStream, name, version, uid):
         meta_data['ID'] = new_created_project.custom_id
     else:
         meta_data['ID'] = str(new_created_project.id)
+        
+    if (meta_data != None):
+        print (meta_data)
+        
     
     return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
 
 def upload_url(url, name, version, user_id):
-    pass
+    return ('Not done yet lol', 200)
 
 def replace_project_data(project, content):
     '''
@@ -500,7 +504,10 @@ def get_package_by_id(uid):
     
     blob_name = "{}:{}.zip".format(desired_project.name, t_id)
     
-    download_blob(macros.CLOUD_STORAGE_BUCKET, blob_name, "/tmp/download_tmp.zip")
+    try:
+        download_blob(macros.CLOUD_STORAGE_BUCKET, blob_name, "/tmp/download_tmp.zip")
+    except:
+        return 'No Such Package.', 400
 
     with open("/tmp/download_tmp.zip", "rb") as f:
         fbytes = f.read()

@@ -52,25 +52,32 @@ def package_create(body=None, x_authorization=None):  # noqa:
         return "Malformed Request.", 400
 
 
-    
-    if (body["data"]["Content"] != ""):
-        response = controller_helper.convert_and_upload_zip(body["data"]["Content"], 
-                                                                body["metadata"]["Name"],
-                                                                body["metadata"]["Version"],
-                                                                body["metadata"]["ID"])
-    else:
-        print ("BODY DATA NULL")
-        print (body["data"])
+    try:    
         
-    if (body["data"]["URL"] != "") :
-        response = controller_helper.upload_url(body["data"]["URL"],
-                                                    body["metadata"]["Name"],
-                                                    body["metadata"]["Version"],
-                                                    body["metadata"]["ID"])
-    else:
-        print ("BODY DATA NULL")
-        print (body["data"])
-    
+        # If content is not set, URL is, it falls to second.
+        # If content is set, it falls through, 
+        if (body["data"]["Content"] != None):
+            if (body["data"]["Content"] != ""):
+                response = controller_helper.convert_and_upload_zip(body["data"]["Content"], 
+                                                                    body["metadata"]["Name"],
+                                                                    body["metadata"]["Version"],
+                                                                    body["metadata"]["ID"])
+                
+
+        elif (body["data"]["URL"] != None):
+            if (body["data"]["URL"] != "") :
+                response = controller_helper.upload_url(body["data"]["URL"],
+                                                        body["metadata"]["Name"],
+                                                        body["metadata"]["Version"],
+                                                        body["metadata"]["ID"])
+        else: 
+            print (body["data"]["URL"])
+            return "Malformed Request.", 400
+
+    except:
+        return "Malformed Request.", 400
+
+
     if (response == None):
         print ("RESPONSE IS NULL")
         print (response)

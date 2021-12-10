@@ -193,7 +193,7 @@ def test_reset():
   
 def test_get_package_false():
   requestUrl = "https://purde-final-project.appspot.com/package/1"
-  print ("GET a package that doesnt exist...")
+  print ("Get by ID a package that doesnt exist...")
   requestHeaders = {
     "X-Authorization": "",
     "Accept": "application/json"
@@ -205,7 +205,7 @@ def test_get_package_false():
   
 def test_get_package_true():
   requestUrl = "https://purde-final-project.appspot.com/package/69696969"
-  print ("GET a package that exists..")
+  print ("Get by ID a package that exists..")
   requestHeaders = {
     "X-Authorization": "gsg",
     "Accept": "application/json"
@@ -213,7 +213,9 @@ def test_get_package_true():
 
   request = requests.get(requestUrl, headers=requestHeaders)
   print(request.status_code)
-  assert (request.status_code == 200)    
+  assert (request.status_code == 200)
+  
+  
 
 
 
@@ -481,7 +483,8 @@ def test_ece_461_failed_1():
     print ("\n Testing ECE-461 failed case 1")
     r = post_random_packages("underscore")     
     assert (r == 201)
-
+    
+    
 
 if __name__ == "__main__":
     
@@ -493,12 +496,13 @@ if __name__ == "__main__":
    test_reset()
    test_reset()
   
-   # post package but first reset so I can actually test shit
+   # POST PACKAGE
    test_post_package_1()
    test_post_package_2()
-  
+       # USER SCHEMA
    test_post_package_user_id()
   
+    # GET ID
    test_get_package_false()
    test_get_package_true()
   
