@@ -52,18 +52,17 @@ def package_create(body=None, x_authorization=None):  # noqa:
         return "Malformed Request.", 400
 
 
-    print (body)
     
-    if (body["data"]["content"] != ""):
-        response = controller_helper.convert_and_upload_zip(body["data"]["content"], 
-                                                                body["metadata"]["name"],
-                                                                body["metadata"]["version"],
-                                                                body["metadata"]["id"])
-    if (body["data"]["url"] != "") :
-        response = controller_helper.upload_url(body["data"]["url"],
-                                                    body["metadata"]["name"],
-                                                    body["metadata"]["version"],
-                                                    body["metadata"]["id"])
+    if (body["data"]["Content"] != ""):
+        response = controller_helper.convert_and_upload_zip(body["data"]["Content"], 
+                                                                body["metadata"]["Name"],
+                                                                body["metadata"]["Version"],
+                                                                body["metadata"]["ID"])
+    if (body["data"]["URL"] != "") :
+        response = controller_helper.upload_url(body["data"]["URL"],
+                                                    body["metadata"]["Name"],
+                                                    body["metadata"]["Version"],
+                                                    body["metadata"]["ID"])
     
     
     

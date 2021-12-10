@@ -32,7 +32,7 @@ class Projects(Base):
     name = Column(String(50), nullable = False, unique = False)
     version = Column(String(50), nullable = False, unique = False)
     
-    custom_id = Column(String(50), primary_key = True, nullable = False, unique = True)
+    custom_id = Column(String(50), nullable = True, unique = True)
     
     # 1 row of metrics, forward link
     project_metrics = relationship("Metrics", back_populates="project_owner")    

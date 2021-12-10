@@ -132,8 +132,7 @@ def add_project_db(name, version, user_id):
         try:
             print ("adding new project")
             print (user_id)
-            print ((session.query(session_config.Projects).filter(session_config.Projects.id == user_id)).first())
-            if (session.query(session_config.Projects).filter(session_config.Projects.id == user_id).first()):
+            if (session.query(session_config.Projects).filter(session_config.Projects.custom_id == user_id).first()):
                 new_project = session_config.Projects(
                             name = name,
                             version = version)
@@ -208,7 +207,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     '''
 
   #  tear_down()
-    print ("HEY")
+    
     response_code = add_project_db(name, version, uid)
     
     if (response_code == 404):
@@ -282,10 +281,14 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     # Get the bucket that the file will be uploaded to.
     bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
     
+    t_id = new_created_project.id
+    if (isinstance(uid, str)):
+        t_id = new_created_project.custom_id
+
         # Create a new blob and upload the file's content.
         # There are 2 GET requests by name or Id, this can make it easier in the future.
     blob = bucket.blob("{}:{}.zip".format(new_created_project.name, 
-                                          new_created_project.id))
+                                          t_id))
 
     blob.upload_from_filename(temp_location)
 
@@ -302,7 +305,11 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     meta_data = {}
     meta_data['Name'] = new_created_project.name
     meta_data['Version'] = new_created_project.version
-    meta_data['ID'] =new_created_project.id
+    
+    if (new_created_project.custom_id):
+        meta_data['ID'] = new_created_project.custom_id
+    else:
+        meta_data['ID'] = str(new_created_project.id)
     
     return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
@@ -483,7 +490,7 @@ def get_package_by_id(uid):
         return 'No Such Package', 400
 
     meta_data = {}
-    meta_data['ID'] = id
+    meta_data['ID'] = uid
     meta_data['Name'] = desired_project.name
     meta_data['Version'] = desired_project.version
 
@@ -616,7 +623,7 @@ def delete_package_by_id(uid):
         this_id = blob.name.partition(':')[2].partition('.')[0]
         print (this_id)
         
-        if (this_id == id):
+        if (this_id == uid):
             blob.delete()
 
     display_sql()    

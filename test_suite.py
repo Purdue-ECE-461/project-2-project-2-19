@@ -99,7 +99,7 @@ def test_post_package_1():
   }
 
     # This request posts the package.
-  _ = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+  f = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
   
       # This request is a duplicate. to ensure the existing package.
   request_exist = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
@@ -172,7 +172,8 @@ def test_post_package_user_id():
     }
       
     request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
-    assert(json.loads(request.content)["ID"] == 69696969)
+    print (request.content)
+    assert(json.loads(request.content)["ID"] == "69696969")
      
 
 def test_reset():
@@ -482,46 +483,45 @@ def test_ece_461_failed_1():
 
 
 if __name__ == "__main__":
-  test_ece_461_failed_1()
     
-  print ("\nRunning Auth tests..")  
-  test_auth_none_user()
-  test_auth_exist_user()
+   print ("\nRunning Auth tests..")  
+   test_auth_none_user()
+   test_auth_exist_user()
   
-  test_reset()
-  test_reset()
-  test_reset()
+   test_reset()
+   test_reset()
+   test_reset()
   
-  # post package but first reset so I can actually test shit
-  test_post_package_1()
-  test_post_package_2()
+   # post package but first reset so I can actually test shit
+   test_post_package_1()
+   test_post_package_2()
   
-  test_post_package_user_id()
+   test_post_package_user_id()
   
-  test_get_package_false()
-  test_get_package_true()
-  
-  
-  test_package_delete_false()
-  test_package_delete_true()
+   test_get_package_false()
+   test_get_package_true()
   
   
-  test_put_no_package()
-  test_put_yes_package()
+   test_package_delete_false()
+   test_package_delete_true()
   
-    # GET /package/byName/{name}
-  test_get_by_name_false()
-  test_get_by_name_true()
-  test_get_by_name_more_versions()
   
-      #DELETE /package/byName/{name}
-  test_delete_by_name_false()
-  test_delete_by_name_true_all_versions()
-  test_delete_by_name_singular()
+   test_put_no_package()
+   test_put_yes_package()
   
-      #POST /packages
-  get_pages_empty()
-  get_some_pages()
-  get_some_pages_with_offset()
+     # GET /package/byName/{name}
+   test_get_by_name_false()
+   test_get_by_name_true()
+   test_get_by_name_more_versions()
   
-  test_ece_461_failed_1()
+       #DELETE /package/byName/{name}
+   test_delete_by_name_false()
+   test_delete_by_name_true_all_versions()
+   test_delete_by_name_singular()
+  
+       #POST /packages
+   get_pages_empty()
+   get_some_pages()
+   get_some_pages_with_offset()
+  
+   test_ece_461_failed_1()

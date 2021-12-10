@@ -18,10 +18,9 @@ def display_sql():
     print (session.query(session_config.Metrics).all())    
     print ("\n====================\n\n")
 
-
-#session_config.tear_session()
-#print ("Dropping pojrect")
-#session_config.drop_it_like_its_HOT()
-session_config.make_table()
+# session_config.tear_session()
+# #print ("Dropping pojrect")
+# session_config.drop_it_like_its_HOT()
+# session_config.make_table()
 
 display_sql()
