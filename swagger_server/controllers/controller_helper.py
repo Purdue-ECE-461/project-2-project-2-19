@@ -282,7 +282,8 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
     
     t_id = new_created_project.id
-    if (isinstance(uid, str)):
+    
+    if (new_created_project.custom_id != None):
         t_id = new_created_project.custom_id
 
         # Create a new blob and upload the file's content.
@@ -306,7 +307,12 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     meta_data['Name'] = new_created_project.name
     meta_data['Version'] = new_created_project.version
     
-    if (new_created_project.custom_id):
+    
+    print ("This is custom ID")
+    print (new_created_project.custom_id)
+    print (type(new_created_project.custom_id))
+    
+    if (new_created_project.custom_id != None):
         meta_data['ID'] = new_created_project.custom_id
     else:
         meta_data['ID'] = str(new_created_project.id)
