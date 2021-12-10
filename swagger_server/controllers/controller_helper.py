@@ -412,14 +412,13 @@ def update_package_by_id(content, uid, name, version):
         success/failure code
     '''
     
-    # ID is unique so yeah
-    if (isinstance(uid, str)):
-        desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.custom_id == uid).first()
-    else:    
-        desired_project = session.query(session_config.Projects).\
-                            filter(session_config.Projects.id == uid).first()
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == uid).first()
 
+    if desired_project is None:
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == str(uid)).first()
+    
     if desired_project is None:
         return 'Malformed request.', 400
 
@@ -457,12 +456,8 @@ def get_packages_by_name(name):
 
 def get_rating_by_id(uid):
     
-    if (isinstance(uid, str)):
-        desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.custom_id == uid).first()
-    else:    
-        desired_project = session.query(session_config.Projects).\
-                            filter(session_config.Projects.id == uid).first()
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == uid).first()
     
     if (desired_project is None):
         return 'No such package.', 400
@@ -480,12 +475,13 @@ def get_package_by_id(uid):
             id, of the project
     '''
     # ID is unique so yeah
-    if (isinstance(uid, str)):
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == str(uid)).first()
+
+    if desired_project is None:
         desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.custom_id == uid).first()
-    else:    
-        desired_project = session.query(session_config.Projects).\
-                            filter(session_config.Projects.id == uid).first()
+                        filter(session_config.Projects.custom_id == str(uid)).first()
+                        
     if desired_project is None:
         return 'No Such Package', 400
 
@@ -597,12 +593,13 @@ def delete_package_by_id(uid):
     # If the given ID is a varchar, check custom_id field.
     # If not, use the typical auto INC ID field.
     
-    if (isinstance(uid, str)):
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == uid).first()
+
+    if desired_project is None:
         desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.custom_id == uid).first()
-    else:    
-        desired_project = session.query(session_config.Projects).\
-                            filter(session_config.Projects.id == uid).first()
+                        filter(session_config.Projects.custom_id == str(uid)).first()
+
 
     if desired_project is None:
         return 'No such package.', 400

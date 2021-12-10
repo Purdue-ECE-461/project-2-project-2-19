@@ -212,7 +212,7 @@ def test_get_package_true():
   }
 
   request = requests.get(requestUrl, headers=requestHeaders)
-
+  print(request.status_code)
   assert (request.status_code == 200)    
 
 
@@ -318,7 +318,8 @@ def test_put_yes_package():
       }
     
       request = requests.put(requestUrl, headers=requestHeaders, json=requestBody)
-      
+      print (request.content)
+      print(request.status_code)
       assert (request.status_code == 200)
     
 
