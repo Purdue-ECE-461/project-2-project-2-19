@@ -126,7 +126,7 @@ def add_project_db(name, version, user_id):
     project = session.query(session_config.Projects).filter(session_config.Projects.version == version).\
                                                     filter(session_config.Projects.name == name).first()
 
-    display_sql()
+    #display_sql()
     # This project is new.
     if not project:
         try:
@@ -160,6 +160,7 @@ def add_project_db(name, version, user_id):
 
 
 def tear_down():
+    #session.rollback()
     print ("Deleting the SQL Database...")
     session.query(session_config.Metrics).delete()
     session.query(session_config.Projects).delete()
@@ -301,7 +302,7 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     # No use for the zip anymore.
     os.remove(temp_location)
 
-    display_sql()
+   # display_sql()
     
     meta_data = {}
     meta_data['Name'] = new_created_project.name
@@ -342,12 +343,22 @@ def upload_url(url, name, version, user_id):
     import shutil
     
     # Step 1: Add to the DB
-    response_code = add_project_db(name, version, user_id)
+    try:
+        rc = add_project_db(name, version, user_id)
+        print (rc)
+    except Exception as e:
+        print ("Caught exception in SQL interactions for URL")
+        print (e)
+        rc = 404
     
-    if (response_code == 404):
+    
+    print ("Got the response code from sql")
+    print (rc)
+    
+    if (rc == 404):
         return 'Malformed request.', 400
     
-    if (response_code == 403):
+    if (rc == 403):
         return 'Package exists already.', 403
     
     
@@ -431,7 +442,7 @@ def upload_url(url, name, version, user_id):
     
     
     #Step -4 return data
-    display_sql()
+    #display_sql()
     
     meta_data = {}
     meta_data['Name'] = new_created_project.name
@@ -536,7 +547,7 @@ def replace_project_data(project, content):
     # No use for the zip anymore.
     os.remove(temp_location)
 
-    display_sql()
+    #display_sql()
     
     return ('Success.', 200)
 
@@ -694,7 +705,7 @@ def delete_package_by_name(name):
     #The format for saving is Name:ID
     # Delete all blobs that contain this name before the :
         
-    display_sql()
+   # display_sql()
     return 'Package is deleted.', 200
 
 
@@ -785,7 +796,7 @@ def delete_package_by_id(uid):
         if (this_id == uid):
             blob.delete()
 
-    display_sql()    
+    #display_sql()    
     return 'Package is deleted.', 200
 
 

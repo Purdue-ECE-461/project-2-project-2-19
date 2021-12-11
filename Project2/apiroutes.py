@@ -45,6 +45,7 @@ def package_create(body=None, x_authorization=None):  # noqa:
             body = connexion.request.get_json()  # noqa: E501
             
     print ("Checking if body is none..")
+    response = None
     try:
         if (body == None):
             print ("BODY NULL")
@@ -62,19 +63,61 @@ def package_create(body=None, x_authorization=None):  # noqa:
                                                                     body["metadata"]["Name"],
                                                                     body["metadata"]["Version"],
                                                                     body["metadata"]["ID"])
-    except:
+    except Exception as ex:
+        print ("Caught exception in Content [Can be false alarm, checking URL]")
+        import sys
+        import traceback
+
+        ex_type, ex_value, ex_traceback = sys.exc_info()
+    
+        # Extract unformatter stack traces as tuples
+        trace_back = traceback.extract_tb(ex_traceback)
+    
+        # Format stacktrace
+        stack_trace = list()
+    
+        for trace in trace_back:
+            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+        print (response)
+        print(ex)
+        print("Exception type : %s " % ex_type.__name__)
+        print("Exception message : %s" %ex_value)
+        print("Stack trace : %s" %stack_trace)
         pass
     
+    # At this point, if response is still None, it means its the second case.
+    
     try:
-        if (body["data"]["URL"] != None):
+        if (response == None):
             if (body["data"]["URL"] != "") :
                 response = controller_helper.upload_url(body["data"]["URL"],
                                                         body["metadata"]["Name"],
                                                         body["metadata"]["Version"],
                                                         body["metadata"]["ID"])
 
-    except Exception as e:
-        print(e)
+    except Exception as ex:
+        print ("Caught exception in URL")
+        import sys
+        import traceback
+
+        ex_type, ex_value, ex_traceback = sys.exc_info()
+    
+        # Extract unformatter stack traces as tuples
+        trace_back = traceback.extract_tb(ex_traceback)
+    
+        # Format stacktrace
+        stack_trace = list()
+    
+        for trace in trace_back:
+            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+        print (response)
+        print(ex)
+        print("Exception type : %s " % ex_type.__name__)
+        print("Exception message : %s" %ex_value)
+        print("Stack trace : %s" %stack_trace)
+
         return "Malformed Request.", 400
 
 

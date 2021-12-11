@@ -477,8 +477,8 @@ def get_some_pages():
 
 
 def get_some_pages_with_offset():
-    print ("\n Testing offset... first adding 7 random projects.")
-    for i in range(0, 7):
+    print ("\n Testing offset... first adding 4 random projects.")
+    for i in range(0, 4):
         print ("\n\t@ Package {}".format(i))
         post_random_packages(str(i + 3))
     
@@ -503,8 +503,142 @@ def test_ece_461_failed_1():
     print ("\n Testing ECE-461 failed case 1")
     r = post_random_packages("underscore")     
     assert (r == 201)
-    
-    
+
+
+
+def test_post_hard():
+  requestUrl = "https://purde-final-project.appspot.com/package"
+  
+  data = open ("react-main.zip", "rb").read()
+  encoded = base64.b64encode(data)
+  s_encoded = str(encoded)[2:]
+  
+  requestBody = {
+    "metadata": {
+      "Name": "shrek lol",
+      "Version": "1.2.3",
+      "ID": "69"
+    },
+    "data": {
+      "JSProgram": "",
+      "URL": ""
+    }
+  }
+  requestHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }
+
+  request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+ 
+
+  print ("\nPost works with new package.")
+  print (request.content)
+  print (request.status_code)
+ # print (request.status_code)
+  assert(request.status_code == 201)
+
+
+def test_hard_post_package():
+  print ("Trying out a hard test case for POST Package")
+  requestUrl = "https://purde-final-project.appspot.com/package"
+  
+  data = open ("react-main.zip", "rb").read()
+  encoded = base64.b64encode(data)
+  s_encoded = str(encoded)[2:]
+  
+  requestBody = {
+    "metadata": {
+      "Name": "shrek lol",
+      "Version": "1.2.3",
+      "ID": "69"
+    },
+    "data": {
+      "JSProgram": "",
+      "URL": "https://github.com/jashkenas/underscore"
+    }
+  }
+  requestHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }
+
+  request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+  print ("\nPost works with new package.")
+  print (request.content)
+  print (request.status_code)  
+  e = {
+    "metadata": {
+      "Name": "shrek lol",
+      "Version": "1.2.3",
+      "ID": "69"
+    },
+    "data": {
+        "Content": s_encoded,
+      "JSProgram": ""   
+    }
+  }  
+
+  request1 = requests.post(requestUrl, headers=requestHeaders, json=e)
+ 
+
+  print ("\nPost works with new package.")
+  print (request1.content)
+  print (request1.status_code)
+  
+  assert (request1.status_code == 403)
+  assert (request.status_code == 201)
+  
+
+def test_hard_post_package_2():
+  print ("Trying out a hard test case for POST Package")
+  requestUrl = "https://purde-final-project.appspot.com/package"
+  
+  data = open ("react-main.zip", "rb").read()
+  encoded = base64.b64encode(data)
+  s_encoded = str(encoded)[2:]
+  
+  requestBody = {
+    "metadata": {
+      "Name": "shrekt",
+      "Version": "1.2.3",
+      "ID": "69"
+    },
+    "data": {
+      "JSProgram": "",
+      "URL": "https://github.com/jashkenas/underscore"
+    }
+  }
+  requestHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }
+
+  print ("\nPost works with new package.")
+  e = {
+    "metadata": {
+      "Name": "shrekt",
+      "Version": "1.2.3",
+      "ID": "69"
+    },
+    "data": {
+        "Content": s_encoded,
+      "JSProgram": ""   
+    }
+  }  
+
+  request = requests.post(requestUrl, headers=requestHeaders, json=e)
+  request1 = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+ 
+
+  print ("\nPost works with new package.")
+  print (request1.content)
+  print (request1.status_code)
+  
+  assert (request1.status_code == 403)
+  assert (request.status_code == 201)
+
+
 
 if __name__ == "__main__":
     
@@ -551,3 +685,6 @@ if __name__ == "__main__":
   
    test_ece_461_failed_1()
    test_post_package_url()
+   
+   test_hard_post_package()
+   test_hard_post_package_2()

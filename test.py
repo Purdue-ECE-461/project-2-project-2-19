@@ -25,9 +25,6 @@ def display_sql():
 
 display_sql()
 
-desired_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.id == "32").first()
-                        
-                        
-print (desired_project)
-print (type(desired_project.custom_id))
+session.rollback()
+session.flush()
+
