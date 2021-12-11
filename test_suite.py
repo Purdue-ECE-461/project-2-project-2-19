@@ -144,7 +144,27 @@ def test_post_package_2():
   assert(request.status_code == 201)
 
 def test_post_package_url():
-    pass
+  print ("Posting with only URL no content field.")  
+  requestUrl = "https://purde-final-project.appspot.com/package"
+  requestBody = {
+    "metadata": {
+      "Name": "underscore",
+      "Version": "69.69",
+      "ID": "59"
+    },
+    "data": {
+      "URL": "https://github.com/jashkenas/underscore",
+      "JSProgram": ""
+    }
+  }
+  requestHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  }
+
+  request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
+
+  print (request.content)
 
 def test_post_package_user_id():
     print ("Testing custom user ID schema for POST")
@@ -530,3 +550,4 @@ if __name__ == "__main__":
    get_some_pages_with_offset()
   
    test_ece_461_failed_1()
+   test_post_package_url()

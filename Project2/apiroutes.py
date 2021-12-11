@@ -43,6 +43,8 @@ def package_create(body=None, x_authorization=None):  # noqa:
 
     if connexion.request.is_json:
             body = connexion.request.get_json()  # noqa: E501
+            
+    print ("Checking if body is none..")
     try:
         if (body == None):
             print ("BODY NULL")
@@ -51,30 +53,28 @@ def package_create(body=None, x_authorization=None):  # noqa:
     except:
         return "Malformed Request.", 400
 
+    print ("Going into the first try block..")
 
     try:    
-        
-        # If content is not set, URL is, it falls to second.
-        # If content is set, it falls through, 
         if (body["data"]["Content"] != None):
             if (body["data"]["Content"] != ""):
                 response = controller_helper.convert_and_upload_zip(body["data"]["Content"], 
                                                                     body["metadata"]["Name"],
                                                                     body["metadata"]["Version"],
                                                                     body["metadata"]["ID"])
-                
-
-        elif (body["data"]["URL"] != None):
+    except:
+        pass
+    
+    try:
+        if (body["data"]["URL"] != None):
             if (body["data"]["URL"] != "") :
                 response = controller_helper.upload_url(body["data"]["URL"],
                                                         body["metadata"]["Name"],
                                                         body["metadata"]["Version"],
                                                         body["metadata"]["ID"])
-        else: 
-            print (body["data"]["URL"])
-            return "Malformed Request.", 400
 
-    except:
+    except Exception as e:
+        print(e)
         return "Malformed Request.", 400
 
 

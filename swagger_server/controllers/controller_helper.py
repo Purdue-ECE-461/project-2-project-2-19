@@ -324,8 +324,135 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
 
 
+def download_url(url, path):
+    import os
+    try:
+        import pygit2
+    except:
+        print ("library not found mate")
+    
+    print ("Tryingn to clone")
+    try:
+        pygit2.clone_repository(url, path)
+    except:
+        return -1
+
+
 def upload_url(url, name, version, user_id):
-    return ('Not done yet lol', 200)
+    import shutil
+    
+    # Step 1: Add to the DB
+    response_code = add_project_db(name, version, user_id)
+    
+    if (response_code == 404):
+        return 'Malformed request.', 400
+    
+    if (response_code == 403):
+        return 'Package exists already.', 403
+    
+    
+    print ("moving to step 2..")
+
+    # Step 2: Download and upload to bucket.
+    temp_location = '/tmp/output_file'
+    
+    download_status = download_url(url, temp_location)
+    
+    print ("Download done. Moving to making archive.")
+    if (download_status == -1):
+        return "Unexpected Server Error", 500
+
+    print(shutil.make_archive("/tmp/output_file", 'zip', temp_location))
+    
+    
+    # To save into a bucket, we need proper file storage format Name:ID. 
+        # So get the ID.
+    
+    new_created_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.version == version).\
+                        filter(session_config.Projects.name == name).first()
+
+    
+    gcs = storage.Client()
+    # Get the bucket that the file will be uploaded to.
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    
+    t_id = new_created_project.id
+    
+    if (new_created_project.custom_id != None):
+        t_id = new_created_project.custom_id
+
+        # Create a new blob and upload the file's content.
+        # There are 2 GET requests by name or Id, this can make it easier in the future.
+    blob = bucket.blob("{}:{}.zip".format(new_created_project.name, 
+                                          t_id))
+
+    temp_location = '/tmp/output_file.zip'
+    print ("Attempting to upload...")
+    blob.upload_from_filename(temp_location)
+
+    blob.make_public()
+
+    # The public URL can be used to directly access the uploaded file via HTTP.
+    print("Link to download: {}".format(blob.public_url))
+    
+    # No use for the zip anymore.
+    os.remove(temp_location)
+    
+    print ("moving to step 3...")
+    
+    # Step3: Now take this project, update the SQL instance.
+    new_metric_val = None
+    metrics_class = get_metrics(url, new_metric_val)
+    
+    print (new_metric_val)
+    print (metrics_class)
+    
+    if (metrics_class.ingestible() == False):
+        session.delete(new_created_project)
+        session.commit()
+        
+        print ("Ingestion failed.")
+        return 'Malformed Request - Ingestion Failed.', 400
+    
+    print ("\n Ingestion Success.. \n")
+    
+    # Add the metric class to SQL instance, 
+    # .. link with the new project, upload to the bucket.
+    session.add(metrics_class)
+    session.commit()
+    
+    # Link these two together.
+    new_created_project.project_metrics = [metrics_class]
+    metrics_class.project_id = new_created_project.id
+    
+    session.commit()
+    
+    
+    
+    #Step -4 return data
+    display_sql()
+    
+    meta_data = {}
+    meta_data['Name'] = new_created_project.name
+    meta_data['Version'] = new_created_project.version
+    
+    
+    print ("This is custom ID")
+    print (new_created_project.custom_id)
+    print (type(new_created_project.custom_id))
+    
+    if (new_created_project.custom_id != None):
+        meta_data['ID'] = new_created_project.custom_id
+    else:
+        meta_data['ID'] = str(new_created_project.id)
+        
+    if (meta_data != None):
+        print (meta_data)
+        
+    
+    return ('Success. Check the ID in the returned metadata for the official ID.', meta_data)
+
 
 def replace_project_data(project, content):
     '''
