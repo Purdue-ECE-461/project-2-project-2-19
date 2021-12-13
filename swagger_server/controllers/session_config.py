@@ -160,19 +160,3 @@ def make_table():
     
     Base.metadata.create_all(pool) 
     
-
-# if __name__ == "__main__":
-#     db = pool.connect()
-#     Session = sessionmaker(bind=pool)
-#     Base.metadata.create_all(pool)
-    
-#     #ed_user = Users(name='ed', password="sex")
-    
-    
-#     session = Session()
-#     #session.add(ed_user)
-#     #session.commit()
-    
-#     print (session.query(Users).all())
-#     print (session.query(Projects).all())
-#     print (session.query(Metrics).all())

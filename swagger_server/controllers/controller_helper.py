@@ -13,7 +13,7 @@ import glob
 import json
 from flask_sqlalchemy import SQLAlchemy
 from google.cloud import storage
-
+import shutil
 
 # Package imports
 from Project2 import util
@@ -63,11 +63,15 @@ def get_pin_value(data):
     
     # 1.2.X is good.
     # ~ or ^ doesnt matter
+    dict_deps = None
+    try:
+        dict_deps = data['dependencies']
+    except:
+        return 1.0
     
-    dict_deps = data['dependencies']
+    if (dict_deps == None):
+        return 1.0
 
-# either in an exact, bounded range, or tilde/carat range forma
-    
     num_exact = 0
     for (key) in dict_deps:
         if(is_possible_row(dict_deps[key])):
@@ -87,29 +91,43 @@ def get_package_json(temp_location_of_zip):
         tuple with Github link and the new metric.
     '''
     with zipfile.ZipFile(temp_location_of_zip, 'r') as f:
-        f.extractall('unzipped')    
+        f.extractall(temp_location_of_zip + 'unzipped')    
     
-    repo_name = child_dirs('unzipped')[0]
+    repo_name = child_dirs(temp_location_of_zip + 'unzipped')[0]
     
     print(repo_name)
+    f = None
+    try:
+        f = open(temp_location_of_zip + 'unzipped/' + 'package.json', 'r')
+    except:
+        f = open(temp_location_of_zip + "unzipped/" + repo_name + 'package.json', 'r')
     
-    f = open('unzipped/' + repo_name + '/package.json', 'r')
+    if (f == None):
+        return [None, -1]
     
     data = json.load(f)
     
     new_metric_value = get_pin_value(data)
     
+    print ("new metric FRESH off the get pin function {}".format(new_metric_value))
+    
     f.close()    
     import shutil
-    shutil.rmtree('unzipped')
+    try:
+        shutil.rmtree(temp_location_of_zip + 'unzipped')
+    except:
+        pass
     
     try:
         if (data['repository']):
-            return (data['repository'], new_metric_value)
+            print ("metric value before returning it to the function {}".format(new_metric_value))
+            return [data['repository'], new_metric_value]
     except:
-        return (None, new_metric_value)
+        return [None, new_metric_value]
 
-    return (data['repository'], new_metric_value)    
+
+    print ("metric value before returning it to the function {}".format(new_metric_value))
+    return [data['repository'], new_metric_value]
 
 
 def display_sql():
@@ -176,19 +194,34 @@ def tear_down():
     blobs = bucket.list_blobs()
     for blob in blobs:
         blob.delete()
+
+    for i in range(0,5):
+        try:        
+            session.query(session_config.Metrics).delete()
+            session.query(session_config.Projects).delete()
+            session.query(session_config.Users).delete()
+            session.commit()
+        except:
+            pass
+        
     print ("Done")
 
-    
 
 def get_metrics(repo_url, new_metric_value):
     from random import uniform
-
-    return session_config.Metrics(BusFactor = uniform(0.6, 0.99),
-                   Correctness = uniform(0.6, 0.99),
-                   GoodPinningPractice = uniform(0.6, 0.99),
+    print ("getting metrics..")
+    
+    if (new_metric_value == None):
+        new_metric_value = uniform(0.6, 0.99)
+    
+    print ("This is the new metric {}".format(new_metric_value))
+    
+    return session_config.Metrics(BusFactor = uniform(0.6, 2.99),
+                   Correctness = uniform(0.6, 3.99),
+                   GoodPinningPractice = new_metric_value,
                    LicenseScore = uniform(0.6, 0.99),
-                   RampUp = uniform(0.6, 0.99),
-                   ResponsiveMaintainer = uniform(0.6, 0.99))
+                   RampUp = uniform(0.6, 1.99),
+                   ResponsiveMaintainer = uniform(0.6, 5.9))
 
 #https://stackoverflow.com/questions/54747460/how-to-decode-an-encoded-zipfile-using-python
 def convert_and_upload_zip(byteStream, name, version, uid):
@@ -216,8 +249,20 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     
     if (response_code == 403):
         return 'Package exists already.', 403
+
+
+
+    # find the project that was recently created again.
+            # since version and name both have to be the same find that.
+    new_created_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.version == version).\
+                        filter(session_config.Projects.name == name).first()
+                        
+                        
+    temp_location = '/tmp/{}.zip'.format(new_created_project.id)
     
-    temp_location = '/tmp/output_file.zip'
+    print ("Using this location")
+    print (temp_location)
 
     with open(temp_location, 'wb') as f:
         f.write(base64.b64decode(byteStream))
@@ -229,25 +274,25 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     print ("YES")
     
     if not f:
+        session.delete(new_created_project)
+        session.commit()
         return 'Malformed request.', 400
     
     # Get the JSON file inside this dir.
     repo_url_for_github = None
     new_metric_val = -1
     try:
-        repo_url_for_github, new_metric_val = get_package_json(temp_location)
+        ret_list = get_package_json(temp_location)
+        repo_url_for_github = ret_list[0]
+        new_metric_val = ret_list[1]
     except:
         print ("No Repo Link")
     
     
-    # find the project that was recently created again.
-            # since version and name both have to be the same find that.
-    new_created_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.version == version).\
-                        filter(session_config.Projects.name == name).first()
+
 
     
-    print ("Will link this: {}".format(new_created_project.name))
+    print ("New metric before finalizing that value..{}".format(new_metric_val))
     
     # --------------------- QUESTION 2 IN DOCS TODO --------------- #
     metrics_class = get_metrics(repo_url_for_github, new_metric_val)
@@ -300,7 +345,15 @@ def convert_and_upload_zip(byteStream, name, version, uid):
     print("Link to download: {}".format(blob.public_url))
     
     # No use for the zip anymore.
+    print ("deleting..")
+    print (temp_location)
     os.remove(temp_location)
+    
+    try:
+        shutil.rmtree(temp_location)
+    except:
+        print ("DIRECTORY is 100% Gone")
+        pass
 
    # display_sql()
     
@@ -327,20 +380,31 @@ def convert_and_upload_zip(byteStream, name, version, uid):
 
 def download_url(url, path):
     import os
+    
+    try:
+        shutil.rmtree(path)
+    except:
+        pass
+    
     try:
         import pygit2
     except:
         print ("library not found mate")
+        return -1
     
     print ("Tryingn to clone")
     try:
         pygit2.clone_repository(url, path)
-    except:
+
+    except Exception as ex:
+        print ("Caught exception in URL")
+        os.remove(path)
+        print_stack(ex)
+
         return -1
 
 
 def upload_url(url, name, version, user_id):
-    import shutil
     
     # Step 1: Add to the DB
     try:
@@ -351,10 +415,6 @@ def upload_url(url, name, version, user_id):
         print (e)
         rc = 404
     
-    
-    print ("Got the response code from sql")
-    print (rc)
-    
     if (rc == 404):
         return 'Malformed request.', 400
     
@@ -363,25 +423,47 @@ def upload_url(url, name, version, user_id):
     
     
     print ("moving to step 2..")
-
+    new_created_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.version == version).\
+                        filter(session_config.Projects.name == name).first()
+                        
     # Step 2: Download and upload to bucket.
-    temp_location = '/tmp/output_file'
-    
-    download_status = download_url(url, temp_location)
-    
-    print ("Download done. Moving to making archive.")
-    if (download_status == -1):
-        return "Unexpected Server Error", 500
+    temp_location_flat = '/tmp/{}'.format(new_created_project.id)
+    print (temp_location_flat)
 
-    print(shutil.make_archive("/tmp/output_file", 'zip', temp_location))
+    try:
+        shutil.rmtree(temp_location_flat)
+    except:
+        pass
+        
+        
+    try:
+        download_status = download_url(url, temp_location_flat)
+    except Exception as ex:
+        print_stack(ex)
+        pass
+    
+    if (download_status == -1):
+        try:
+            download_status = download_url(url, temp_location_flat)
+        except:
+            session.delete(new_created_project)
+            session.commit()
+            return "Unexpected Server Error; This is an issue with PYGIT2 and not this API.", 500
+    
+    try:
+        print(shutil.make_archive(temp_location_flat, 'zip', temp_location_flat))
+    except Exception as ex:
+        print_stack(ex)
+        
+        session.delete(new_created_project)
+        session.commit()
+        return "Unexpected Server Error; This is an issue with Python inbuilt Shutil and not this API.", 500
     
     
     # To save into a bucket, we need proper file storage format Name:ID. 
         # So get the ID.
     
-    new_created_project = session.query(session_config.Projects).\
-                        filter(session_config.Projects.version == version).\
-                        filter(session_config.Projects.name == name).first()
 
     
     gcs = storage.Client()
@@ -398,7 +480,9 @@ def upload_url(url, name, version, user_id):
     blob = bucket.blob("{}:{}.zip".format(new_created_project.name, 
                                           t_id))
 
-    temp_location = '/tmp/output_file.zip'
+    temp_location = '/tmp/{}.zip'.format(new_created_project.id)
+    print (temp_location)
+
     print ("Attempting to upload...")
     blob.upload_from_filename(temp_location)
 
@@ -408,12 +492,28 @@ def upload_url(url, name, version, user_id):
     print("Link to download: {}".format(blob.public_url))
     
     # No use for the zip anymore.
-    os.remove(temp_location)
-    
+    try:
+        shutil.rmtree(temp_location)
+        os.remove(temp_location)
+    except:
+        print("The directories are gone.")
+        
     print ("moving to step 3...")
     
     # Step3: Now take this project, update the SQL instance.
-    new_metric_val = None
+    new_metric_val = -1
+    repo_url_for_github = None
+    try:
+        ret_list = get_package_json(temp_location)
+        repo_url_for_github = ret_list[0]
+        new_metric_val = ret_list[1]
+    except Exception as ex:
+        print_stack(ex)
+        session.delete(new_created_project)
+        session.commit()
+        return ('Unexpected Error. Cant get JSON File for Metrics.', 500)
+
+    print ("New metric before finalizing that value.. {}".format(new_metric_val))
     metrics_class = get_metrics(url, new_metric_val)
     
     print (new_metric_val)
@@ -424,6 +524,8 @@ def upload_url(url, name, version, user_id):
         session.commit()
         
         print ("Ingestion failed.")
+        session.delete(new_created_project)
+        session.commit()
         return 'Malformed Request - Ingestion Failed.', 400
     
     print ("\n Ingestion Success.. \n")
@@ -438,8 +540,6 @@ def upload_url(url, name, version, user_id):
     metrics_class.project_id = new_created_project.id
     
     session.commit()
-    
-    
     
     #Step -4 return data
     #display_sql()
@@ -478,11 +578,13 @@ def replace_project_data(project, content):
     # The row-entry with this project should remain the same and so should the name of. .
     # .. the blob
     
+    print ("Trying to write replacing data...")
     temp_location = '/tmp/output_file.zip'
 
     with open(temp_location, 'wb') as f:
         f.write(base64.b64decode(content))
-            
+    
+    print ("Success..")
     #Verify the auth works.
     util.implicit()
     
@@ -493,8 +595,11 @@ def replace_project_data(project, content):
     repo_url_for_github = None
     new_metric_val = -1
     try:
-        repo_url_for_github, new_metric_val = get_package_json(temp_location)
-    except:
+        ret_list = get_package_json(temp_location)
+        repo_url_for_github = ret_list[0]
+        new_metric_val = ret_list[1]
+    except Exception as ex:
+        print_stack(ex)
         print ("No Repo Link")
     
     
@@ -505,7 +610,7 @@ def replace_project_data(project, content):
     if (replacing_metrics_class.ingestible() == False):
         # Ingestion failed, abort replacement
         print ("Ingestion failed.")
-        return -1
+        return ("Ingestion failed", 400)
     
     print ("\n Ingestion Success.. \n")
     
@@ -546,6 +651,12 @@ def replace_project_data(project, content):
     
     # No use for the zip anymore.
     os.remove(temp_location)
+    
+    try:
+        shutil.rmtree(temp_location)
+    except:
+        print ("Dir gone.")
+        pass
 
     #display_sql()
     
@@ -566,9 +677,11 @@ def update_package_by_id(content, uid, name, version):
     if desired_project is None:
         desired_project = session.query(session_config.Projects).\
                         filter(session_config.Projects.custom_id == str(uid)).first()
-    
+        
     if desired_project is None:
         return 'Malformed request.', 400
+
+    print ("Found package.. atempting to replace data.")
 
     # desired_project is what we're replacing.
     
@@ -576,6 +689,107 @@ def update_package_by_id(content, uid, name, version):
     
     return return_code
 
+
+def update_package_by_id_url(url, uid, name, version):
+
+    desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.id == uid).first()
+
+    if desired_project is None:
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == str(uid)).first()
+        
+    if desired_project is None:
+        return 'Malformed request.', 400
+
+    print ("Found package.. atempting to replace data.")
+    
+    content = None
+    
+    temp_location = "/tmp/download_tmp"
+    
+    try:
+        download_url(url, temp_location)
+    except Exception as ex:
+        print_stack(ex)
+
+    try:
+        print(shutil.make_archive("/tmp/download_tmp", 'zip', temp_location))
+    except Exception as ex:
+        print_stack(ex)
+        return "Unexpected Server Error; This is an issue with Python inbuilt Shutil and not this API.", 500
+    
+    
+    with open("/tmp/download_tmp.zip", "rb") as f:
+        fbytes = f.read()
+        encoded = base64.b64encode(fbytes)
+    
+    
+    temp_location = "/tmp/download_tmp.zip"
+
+    # Get the JSON file inside this dir.
+    repo_url_for_github = None
+    new_metric_val = -1
+    try:
+        ret_list = get_package_json(temp_location)
+        repo_url_for_github = ret_list[0]
+        new_metric_val = ret_list[1]
+    except:
+        print ("No Repo Link")
+    
+    
+    # New metrics class
+    replacing_metrics_class = get_metrics(repo_url_for_github, new_metric_val)
+    existing_metrics_class = find_metrics_by_project(desired_project)    
+
+    if (replacing_metrics_class.ingestible() == False):
+        # Ingestion failed, abort replacement
+        print ("Ingestion failed.")
+        return -1
+    
+    print ("\n Ingestion Success.. \n")
+    
+    session.delete(existing_metrics_class)
+    session.add(replacing_metrics_class)
+    session.commit()
+    
+    # Link these two together.
+    desired_project.project_metrics = []
+    session.commit()
+
+    desired_project.project_metrics = [replacing_metrics_class]
+    replacing_metrics_class.project_id = desired_project.id    
+    session.commit()
+
+    # Change the Blob contents...
+    gcs = storage.Client()
+
+    bucket = gcs.get_bucket(macros.CLOUD_STORAGE_BUCKET)
+    
+    blobs = bucket.list_blobs()
+    for blob in blobs:
+        this_name = blob.name.partition(':')[0]
+        this_id = blob.name.partition(':')[2].partition('.')[0]
+        
+        if (this_name == desired_project.name and this_id == desired_project.id):
+            blob.delete()
+
+    blob = bucket.blob("{}:{}.zip".format(desired_project.name, 
+                                          desired_project.id))
+
+    blob.upload_from_filename(temp_location)
+
+    blob.make_public()
+
+    # The public URL can be used to directly access the uploaded file via HTTP.
+    print("Link to download: {}".format(blob.public_url))
+    
+    # No use for the zip anymore.
+    os.remove(temp_location)
+
+    #display_sql()
+    
+    return ('Success.', 200)
 
 
 def get_packages_by_name(name):
@@ -591,6 +805,7 @@ def get_packages_by_name(name):
     if (desired_projects == []):
         return 'No such package.', 400
     
+    print("Found package.. getting metadata.")
     meta_data = []
     for project in desired_projects:
         this_data = {}
@@ -604,11 +819,21 @@ def get_packages_by_name(name):
 
 def get_rating_by_id(uid):
     
+    print (uid)
+    
     desired_project = session.query(session_config.Projects).\
                         filter(session_config.Projects.id == uid).first()
+
+    print (desired_project)
+    if desired_project is None:
+        desired_project = session.query(session_config.Projects).\
+                        filter(session_config.Projects.custom_id == str(uid)).first()
+    
+    print (desired_project)
     
     if (desired_project is None):
         return 'No such package.', 400
+    print ("Found package for ratings")
     
     metric_class = find_metrics_by_project(desired_project)
     
@@ -626,13 +851,20 @@ def get_package_by_id(uid):
     desired_project = session.query(session_config.Projects).\
                         filter(session_config.Projects.id == str(uid)).first()
 
+    print (desired_project)
     if desired_project is None:
-        desired_project = session.query(session_config.Projects).\
+        try:
+            desired_project = session.query(session_config.Projects).\
                         filter(session_config.Projects.custom_id == str(uid)).first()
+        except:
+            desired_project = None
+    print (desired_project)
+
                         
     if desired_project is None:
         return 'No Such Package', 400
 
+    print ("Found package for ratings")
     # Set content in data field. return the entire object.
     data = {}
     
@@ -642,10 +874,18 @@ def get_package_by_id(uid):
     
     blob_name = "{}:{}.zip".format(desired_project.name, t_id)
     
-    try:
-        download_blob(macros.CLOUD_STORAGE_BUCKET, blob_name, "/tmp/download_tmp.zip")
-    except:
-        return 'No Such Package.', 400
+    for i in range(0,10):
+            try:
+                print ("Attempting to download....")
+                download_blob(macros.CLOUD_STORAGE_BUCKET, blob_name, "/tmp/download_tmp.zip")
+            except Exception as ex:
+                continue
+            else:
+                break
+    else:
+        return ('No Such Package.', 400)
+
+    print ("Success. Got the File!")
 
     with open("/tmp/download_tmp.zip", "rb") as f:
         fbytes = f.read()
@@ -668,6 +908,7 @@ def get_package_by_id(uid):
 
 def find_metrics_by_project(proj):
     mid = proj.project_metrics[0].mid
+    print ("Trynig to find metrics for this project..")
     return session.query(session_config.Metrics).filter(session_config.Metrics.mid == mid).first()
 
 def delete_package_by_name(name):
@@ -683,6 +924,10 @@ def delete_package_by_name(name):
         
     if desired_projects == []:
         return 'No such package.', 400
+    
+    
+    print ("Found projects to delete by name")
+    print (desired_projects)
     
     for projects in desired_projects:
         # Delete the associoated metrics.
@@ -777,6 +1022,8 @@ def delete_package_by_id(uid):
     if desired_project is None:
         return 'No such package.', 400
 
+    print ("Found package to delete!")
+
     # Remvoe the metric first
     session.delete(find_metrics_by_project(desired_project))
     session.delete(desired_project)
@@ -807,6 +1054,24 @@ def delete_package_by_id(uid):
 
 
 
+def print_stack(ex):
+    import sys
+    import traceback
+    
+    ex_type, ex_value, ex_traceback = sys.exc_info()
+    
+    # Extract unformatter stack traces as tuples
+    trace_back = traceback.extract_tb(ex_traceback)
+    
+    # Format stacktrace
+    stack_trace = list()
+    
+    for trace in trace_back:
+        stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+    print("Exception type : %s " % ex_type.__name__)
+    print("Exception message : %s" %ex_value)
+    print("Stack trace : %s" %stack_trace)
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
@@ -820,3 +1085,6 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
 
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
+    
+    
+    return 200

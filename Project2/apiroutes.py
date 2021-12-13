@@ -157,6 +157,25 @@ def package_retrieve(id=None, x_authorization=None):  # noqa: E501
     return ret[0], ret[1]
 
 
+def print_stack(ex):
+    import sys
+    import traceback
+    
+    ex_type, ex_value, ex_traceback = sys.exc_info()
+    
+    # Extract unformatter stack traces as tuples
+    trace_back = traceback.extract_tb(ex_traceback)
+    
+    # Format stacktrace
+    stack_trace = list()
+    
+    for trace in trace_back:
+        stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+    print("Exception type : %s " % ex_type.__name__)
+    print("Exception message : %s" %ex_value)
+    print("Stack trace : %s" %stack_trace)
+
 @app.route("/package/<id>", methods=["PUT"])
 def package_update(id=None, body=None, x_authorization=None):  # noqa: E501
     """Update this version of the package.
@@ -175,13 +194,39 @@ def package_update(id=None, body=None, x_authorization=None):  # noqa: E501
     if connexion.request.is_json:
         body = Package.from_dict(connexion.request.get_json())  # noqa: E501    
     
-    
-    ret = controller_helper.update_package_by_id(body.data.content,
-                                              body.metadata.id,
-                                              body.metadata.name,
-                                              body.metadata.version)
-    return ret[0], ret[1]
+    print ("Going into the first try block..")
+    ret = None
+    try:    
+        if (body.data.content != None):
+            if (body.data.content != ""):
+                ret = controller_helper.update_package_by_id(body.data.content,
+                                                          body.metadata.id,
+                                                          body.metadata.name,
+                                                          body.metadata.version)
+    except Exception as ex:
+        print ("Caught exception in Content [Can be false alarm, checking URL]")
+        print_stack(ex)
+        pass
+        
+    try:
+        if (ret == None):
+            if (body.data.url != "") :
+                ret = controller_helper.update_package_by_id_url(body.data.url,
+                                                          body.metadata.id,
+                                                          body.metadata.name,
+                                                          body.metadata.version)
 
+    except Exception as ex:
+        print ("Caught exception in URL")
+        print_stack(ex)
+        return "Malformed Request.", 400
+
+
+    if (ret == None):
+        print ("RESPONSE IS NULL")
+        return 'Unexpected Error', 500    
+    
+    return ret[0], ret[1]
 
 
 @app.route("/package/<id>", methods=["DELETE"])

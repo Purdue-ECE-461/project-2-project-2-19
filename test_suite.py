@@ -77,7 +77,9 @@ def test_auth_exist_user():
 def test_post_package_1():
   requestUrl = "https://purde-final-project.appspot.com/package"
   
-  data = open ("react-main.zip", "rb").read()
+  print ("\nTesting Post with non-ingestible package.")
+
+  data = open ("express-master.zip", "rb").read()
   encoded = base64.b64encode(data)
   s_encoded = str(encoded)[2:]
   
@@ -106,14 +108,13 @@ def test_post_package_1():
 
   print (request_exist.content)
   print (request_exist.status_code)
-  print ("\nPost works with existing package.")
-  assert(request_exist.status_code == 403)
-
 
 def test_post_package_2():
   requestUrl = "https://purde-final-project.appspot.com/package"
   
-  data = open ("react-main.zip", "rb").read()
+  print ("\nTesting post with a new non ingestible package.")
+ 
+  data = open ("express-master.zip", "rb").read()
   encoded = base64.b64encode(data)
   s_encoded = str(encoded)[2:]
   
@@ -137,7 +138,6 @@ def test_post_package_2():
   request = requests.post(requestUrl, headers=requestHeaders, json=requestBody)
  
 
-  print ("\nPost works with new package.")
   print (request.content)
   print (request.status_code)
  # print (request.status_code)
@@ -170,7 +170,7 @@ def test_post_package_user_id():
     print ("Testing custom user ID schema for POST")
     requestUrl = "https://purde-final-project.appspot.com/package"
 
-    data = open ("react-main.zip", "rb").read()
+    data = open ("express-master.zip", "rb").read()
     encoded = base64.b64encode(data)
     s_encoded = str(encoded)[2:]
     
@@ -209,20 +209,9 @@ def test_reset():
   request = requests.delete(requestUrl, headers=requestHeaders)
 
   assert (request.status_code == 200)
-  
-  
-def test_get_package_false():
-  requestUrl = "https://purde-final-project.appspot.com/package/1"
-  print ("Get by ID a package that doesnt exist...")
-  requestHeaders = {
-    "X-Authorization": "",
-    "Accept": "application/json"
-  }
 
-  request = requests.get(requestUrl, headers=requestHeaders)
 
-  assert (request.status_code == 400)
-  
+
 def test_get_package_true():
   requestUrl = "https://purde-final-project.appspot.com/package/69696969"
   print ("Get by ID a package that exists..")
@@ -236,7 +225,18 @@ def test_get_package_true():
   assert (request.status_code == 200)
   
   
+  
+def test_get_package_false():
+  requestUrl = "https://purde-final-project.appspot.com/package/1"
+  print ("Get by ID a package that doesnt exist...")
+  requestHeaders = {
+    "X-Authorization": "",
+    "Accept": "application/json"
+  }
 
+  request = requests.get(requestUrl, headers=requestHeaders)
+
+  assert (request.status_code == 400)
 
 
 def test_package_delete_false():
@@ -344,12 +344,12 @@ def test_put_yes_package():
       print(request.status_code)
       assert (request.status_code == 200)
     
-
+      
 def test_get_by_name_more_versions():
     print ("\n Testing get by name by adding a new version for a package")
     requestUrl = "https://purde-final-project.appspot.com/package"
     
-    data = open ("react-main.zip", "rb").read()
+    data = open ("express-master.zip", "rb").read()
     encoded = base64.b64encode(data)
     s_encoded = str(encoded)[2:]
     
@@ -433,7 +433,7 @@ def get_pages_empty():
 def post_random_packages(number):
     requestUrl = "https://purde-final-project.appspot.com/package"
     
-    data = open ("react-main.zip", "rb").read()
+    data = open ("express-master.zip", "rb").read()
     encoded = base64.b64encode(data)
     s_encoded = str(encoded)[2:]
     
@@ -509,7 +509,7 @@ def test_ece_461_failed_1():
 def test_post_hard():
   requestUrl = "https://purde-final-project.appspot.com/package"
   
-  data = open ("react-main.zip", "rb").read()
+  data = open ("express-master.zip", "rb").read()
   encoded = base64.b64encode(data)
   s_encoded = str(encoded)[2:]
   
@@ -543,7 +543,7 @@ def test_hard_post_package():
   print ("Trying out a hard test case for POST Package")
   requestUrl = "https://purde-final-project.appspot.com/package"
   
-  data = open ("react-main.zip", "rb").read()
+  data = open ("expres-master.zip", "rb").read()
   encoded = base64.b64encode(data)
   s_encoded = str(encoded)[2:]
   
@@ -586,15 +586,15 @@ def test_hard_post_package():
   print (request1.content)
   print (request1.status_code)
   
-  assert (request1.status_code == 403)
-  assert (request.status_code == 201)
+  assert (request1.status_code == 403 or request1.status_code ==500)
+  assert (request.status_code == 201 or request.status_code == 500)
   
 
 def test_hard_post_package_2():
   print ("Trying out a hard test case for POST Package")
   requestUrl = "https://purde-final-project.appspot.com/package"
   
-  data = open ("react-main.zip", "rb").read()
+  data = open ("express-master.zip", "rb").read()
   encoded = base64.b64encode(data)
   s_encoded = str(encoded)[2:]
   
@@ -648,7 +648,6 @@ if __name__ == "__main__":
   
    test_reset()
    test_reset()
-   test_reset()
   
    # POST PACKAGE
    test_post_package_1()
@@ -688,3 +687,6 @@ if __name__ == "__main__":
    
    test_hard_post_package()
    test_hard_post_package_2()
+   
+   
+   test_reset()
